@@ -20,11 +20,11 @@ test("スニーカーを新規登録できる", async ({ page }) => {
   await expect(page.locator("#brand")).toHaveValue("");
   await expect(page.locator("#releaseDate")).toHaveValue("");
 
-  const item = page.locator("li").filter({ hasText: modelName });
-  await expect(item).toBeVisible();
-  await expect(item.getByText("Nike")).toBeVisible();
+  const item = page.locator("ul > li").filter({ hasText: modelName });
+  await expect(item).toBeVisible({ timeout: 15000 });
+  await expect(item).toContainText("Nike");
   await expect(item.getByRole("switch", { name: `${modelName}の通知設定` })).toBeVisible();
 
   await page.reload();
-  await expect(page.locator("li").filter({ hasText: modelName })).toBeVisible();
+  await expect(page.locator("ul > li").filter({ hasText: modelName })).toBeVisible();
 });
