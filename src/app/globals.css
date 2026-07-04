@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --color-drop-orange: #ff6600;
+  --color-drop-orange-hover: #ff8533;
+  --color-neon: #818cf8;
+  --color-neon-bright: #a5b4fc;
+  --color-surface: #1e293b;
+  --color-surface-light: #0f172a;
+  --color-border: #334155;
+  --font-sans: var(--font-noto-sans-jp), "Noto Sans JP", system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply antialiased;
+    font-family: var(--font-sans);
+  }
+
+  input[type="date"] {
+    color-scheme: dark;
+  }
+}
+
+@layer components {
+  .input-glow:focus-within {
+    box-shadow:
+      0 0 0 1px rgb(129 140 248 / 0.6),
+      0 0 0 4px rgb(129 140 248 / 0.15),
+      0 0 20px rgb(99 102 241 / 0.35);
+  }
+
+  .btn-press:not(:disabled):active {
+    transform: translateY(2px) scale(0.98);
+  }
+}

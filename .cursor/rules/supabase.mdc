@@ -1,0 +1,37 @@
+---
+description: SneakerDrop Supabase開発ルール（MCP・クライアント連携）
+globs: src/lib/**/*.ts,src/types/**/*.ts,src/pages/**/*.tsx
+alwaysApply: false
+---
+
+# Supabase 開発ルール（SneakerDrop）
+
+## プロジェクト情報
+
+- **Project ref**: `bgewibbguoqqftvqffhg`
+- **Project name**: shose
+- **主要テーブル**: `public.sneakers`
+
+## MCP の使い方
+
+- スキーマ確認: `list_tables` を先に実行
+- DDL（テーブル作成・変更）: `apply_migration` を使用
+- データ確認: `execute_sql`（読み取り用途）
+- クライアント設定: `get_project_url` / `get_publishable_keys`
+
+## アプリ側の接続
+
+- クライアント: `src/lib/supabase.ts`
+- CRUD: `src/lib/sneakers.ts`
+- 環境変数: `.env` の `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`
+
+## セキュリティ
+
+- `service_role` キーはフロントエンドに置かない
+- 本番前に RLS を有効化し、ポリシーを設計する
+- MCP で `apply_migration` する前に `list_tables` で現状を確認する
+
+## Agent Skills
+
+- `.agents/skills/supabase/SKILL.md`
+- `.agents/skills/supabase-postgres-best-practices/SKILL.md`

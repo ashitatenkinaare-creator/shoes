@@ -16,17 +16,6 @@ export interface CreateSneakerInput {
   model_name: string;
   brand: string;
   release_date: string;
-  price: number;
-  image_url?: string | null;
-}
-
-/** スニーカー更新時の入力（指定したフィールドのみ更新） */
-export interface UpdateSneakerInput {
-  model_name?: string;
-  brand?: string;
-  release_date?: string;
-  price?: number;
-  image_url?: string | null;
 }
 
 /** CRUD 操作の共通レスポンス型 */
@@ -35,35 +24,26 @@ export interface SneakerResult<T = SneakerRow> {
   error: string | null;
 }
 
-/** UI コンポーネント用（既存） */
-export type Brand =
-  | "Nike"
-  | "Adidas"
-  | "New Balance"
-  | "ASICS"
-  | "Mizuno"
-  | "Puma"
-  | "Converse";
-
-export interface Sneaker {
+/** アプリ共通の Sneaker 型 */
+export type Sneaker = {
   id: string;
   modelName: string;
-  brand: Brand;
-  releaseDate: string;
-  price: number;
-  imageUrl: string;
+  brand: string;
   isNotified: boolean;
-  featured?: boolean;
-}
+  releaseDate: Date;
+  createdAt: Date;
+};
+
+/** 一覧フィルター */
+export type FilterMode = "all" | "notified";
 
 export function toSneaker(row: SneakerRow): Sneaker {
   return {
     id: row.id,
     modelName: row.model_name,
-    brand: row.brand as Brand,
-    releaseDate: row.release_date,
-    price: row.price,
-    imageUrl: row.image_url ?? "",
+    brand: row.brand,
     isNotified: row.is_notified,
+    releaseDate: new Date(row.release_date),
+    createdAt: new Date(row.created_at),
   };
 }
