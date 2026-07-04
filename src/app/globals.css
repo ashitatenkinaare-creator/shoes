@@ -8,6 +8,12 @@
   --color-surface: #1e293b;
   --color-surface-light: #0f172a;
   --color-border: #334155;
+  --color-radar-bg: #0b1120;
+  --color-radar-surface: #111827;
+  --color-radar-muted: #1f2937;
+  --color-radar-border: #374151;
+  --color-radar-accent: #34d399;
+  --color-radar-accent-hover: #6ee7b7;
   --font-sans: var(--font-noto-sans-jp), "Noto Sans JP", system-ui, sans-serif;
 }
 
