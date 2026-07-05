@@ -45,6 +45,8 @@ export type RadarSneakerUpsertRow = {
   description: string;
   colorway: string;
   sku: string;
+  is_rare: boolean;
+  is_collab: boolean;
 };
 
 export type SyncRadarOptions = {

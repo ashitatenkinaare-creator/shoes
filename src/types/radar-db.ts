@@ -14,6 +14,8 @@ export type RadarSneakerRow = {
   sku: string;
   source: "seed" | "kicksdb" | string;
   external_id: string | null;
+  is_rare: boolean;
+  is_collab: boolean;
   created_at: string;
   updated_at: string;
 };

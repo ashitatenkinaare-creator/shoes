@@ -2,7 +2,7 @@ import {
   fetchUpcomingStockxProducts,
   syncRadarReleases,
 } from "../../../supabase/functions/_shared/sync-radar-releases";
-import { mapKicksDbProductToRow } from "../../../supabase/functions/_shared/kicksdb-map";
+import { mapKicksDbProductToRow, detectRareCollabFlags } from "../../../supabase/functions/_shared/kicksdb-map";
 import type {
   KicksDbStockxProduct,
   SyncRadarOptions,
@@ -11,7 +11,7 @@ import type {
 
 export type { KicksDbStockxProduct, SyncRadarOptions, SyncRadarResult };
 
-export { fetchUpcomingStockxProducts, mapKicksDbProductToRow, syncRadarReleases };
+export { fetchUpcomingStockxProducts, mapKicksDbProductToRow, syncRadarReleases, detectRareCollabFlags };
 
 export function buildSyncOptions(apiKey: string): SyncRadarOptions {
   return {

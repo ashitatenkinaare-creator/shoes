@@ -141,6 +141,52 @@ function resolveModelName(product: KicksDbStockxProduct): string {
   return (product.title ?? product.name ?? product.slug ?? "Unknown Sneaker").trim();
 }
 
+const RARE_PATTERNS = [
+  /\bOG\b/i,
+  /\bRetro\b/i,
+  /\bReimagined\b/i,
+  /\bLimited\b/i,
+  /\bExclusive\b/i,
+  /\bSample\b/i,
+  /\bPrototype\b/i,
+  /\bPremium\b/i,
+  /\bAnniversary\b/i,
+  /\bSpecial Edition\b/i,
+];
+
+const COLLAB_PATTERNS = [
+  /\bx\s+/i,
+  /\s+x\s+/i,
+  /×/,
+  /\bcollab(orati(on|e))?\b/i,
+  /\btravis scott\b/i,
+  /\boff-?white\b/i,
+  /\bfragment\b/i,
+  /\bsacai\b/i,
+  /\bunion\b/i,
+  /\bstrangelove\b/i,
+  /\bclot\b/i,
+  /\bambush\b/i,
+  /\bnocta\b/i,
+  /\bkaws\b/i,
+  /\bsupreme\b/i,
+  /\bstone island\b/i,
+  /\bcomme des garçons\b/i,
+  /\bcdg\b/i,
+];
+
+/** モデル名・ブランドからレア / コラボフラグを推定 */
+export function detectRareCollabFlags(
+  modelName: string,
+  brand = "",
+): { is_rare: boolean; is_collab: boolean } {
+  const haystack = `${brand} ${modelName}`.trim();
+  const hasQuotedColorway = /'[^']+'/.test(modelName) || /"[^"]+"/.test(modelName);
+  const is_rare = RARE_PATTERNS.some((pattern) => pattern.test(haystack)) || hasQuotedColorway;
+  const is_collab = COLLAB_PATTERNS.some((pattern) => pattern.test(haystack));
+  return { is_rare, is_collab };
+}
+
 export function mapKicksDbProductToRow(
   product: KicksDbStockxProduct,
   options: Pick<SyncRadarOptions, "usdJpy" | "announceOffsetDays"> = {},
@@ -155,6 +201,7 @@ export function mapKicksDbProductToRow(
   const modelName = resolveModelName(product);
   const usdJpy = options.usdJpy ?? DEFAULT_USD_JPY;
   const announceOffset = options.announceOffsetDays ?? DEFAULT_ANNOUNCE_OFFSET_DAYS;
+  const { is_rare, is_collab } = detectRareCollabFlags(modelName, brand);
 
   return {
     source: "kicksdb",
@@ -172,5 +219,7 @@ export function mapKicksDbProductToRow(
       `${brand} ${modelName}。KicksDB / StockX カタログから同期された新作情報です。`,
     colorway: (product.colorway ?? "").trim(),
     sku: (product.sku ?? "").trim(),
+    is_rare,
+    is_collab,
   };
 }

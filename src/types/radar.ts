@@ -14,6 +14,8 @@ export type SneakerRadarItem = {
   phase: SneakerPhase;
   price: number;
   storeUrl: string;
+  isRare: boolean;
+  isCollab: boolean;
   /** 条件マッチ理由（ダッシュボード表示用） */
   matchedReasons: string[];
 };

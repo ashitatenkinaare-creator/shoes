@@ -11,6 +11,10 @@ export function toAppSneakerId(dbId: string): string {
 }
 
 export function rowToSneakerItem(row: RadarSneakerRow): SneakerRadarItem {
+  const matchedReasons = [`ブランド: ${row.brand}`];
+  if (row.is_rare) matchedReasons.push("レア");
+  if (row.is_collab) matchedReasons.push("コラボ");
+
   return {
     id: toAppSneakerId(row.id),
     brand: row.brand,
@@ -21,7 +25,9 @@ export function rowToSneakerItem(row: RadarSneakerRow): SneakerRadarItem {
     phase: row.phase,
     price: row.price,
     storeUrl: row.store_url,
-    matchedReasons: [`ブランド: ${row.brand}`],
+    isRare: row.is_rare ?? false,
+    isCollab: row.is_collab ?? false,
+    matchedReasons,
   };
 }
 

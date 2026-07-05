@@ -47,7 +47,9 @@ export const MOCK_NEW_ARRIVALS: SneakerRadarItem[] = [
     phase: "upcoming",
     price: 24200,
     storeUrl: "https://example.com/store/jordan-1",
-    matchedReasons: ["ブランド: Jordan", "サイズ: 28.0cm 在庫あり"],
+    isRare: true,
+    isCollab: false,
+    matchedReasons: ["ブランド: Jordan", "サイズ: 28.0cm 在庫あり", "レア"],
   },
   {
     id: "sr-002",
@@ -60,7 +62,9 @@ export const MOCK_NEW_ARRIVALS: SneakerRadarItem[] = [
     phase: "today",
     price: 18700,
     storeUrl: "https://example.com/store/air-max-1",
-    matchedReasons: ["ブランド: Nike", "新作発表 48時間以内"],
+    isRare: true,
+    isCollab: false,
+    matchedReasons: ["ブランド: Nike", "新作発表 48時間以内", "レア"],
   },
   {
     id: "sr-003",
@@ -73,6 +77,8 @@ export const MOCK_NEW_ARRIVALS: SneakerRadarItem[] = [
     phase: "announced",
     price: 31900,
     storeUrl: "https://example.com/store/990v6",
+    isRare: false,
+    isCollab: false,
     matchedReasons: ["ブランド: New Balance"],
   },
   {
@@ -86,6 +92,8 @@ export const MOCK_NEW_ARRIVALS: SneakerRadarItem[] = [
     phase: "announced",
     price: 15400,
     storeUrl: "https://example.com/store/dunk-panda",
+    isRare: false,
+    isCollab: false,
     matchedReasons: ["ブランド: Nike", "ウォッチ中ブランド"],
   },
 ];
