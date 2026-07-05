@@ -12,6 +12,8 @@ import {
   AVAILABLE_COLLAB_BRANDS,
   AVAILABLE_SILHOUETTES,
 } from "@/lib/radar/silhouette-keywords";
+import { fetchActiveCategoriesClient } from "@/lib/radar/categories-db";
+import type { RadarCategory } from "@/lib/radar/categories";
 import { useAuthSession } from "@/hooks/useAuthSession";
 import {
   loadLocalPreferences,
@@ -69,9 +71,16 @@ function NotificationToggle({
 export default function PreferenceForm() {
   const { user, loading: authLoading } = useAuthSession();
   const [preferences, setPreferences] = useState<UserPreferences>(MOCK_PREFERENCES);
+  const [categoryOptions, setCategoryOptions] = useState<RadarCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    void fetchActiveCategoriesClient().then(({ data }) => {
+      if (data) setCategoryOptions(data);
+    });
+  }, []);
 
   useEffect(() => {
     if (authLoading) return;
@@ -160,6 +169,21 @@ export default function PreferenceForm() {
           onChange={(brands) => setPreferences((prev) => ({ ...prev, brands }))}
         />
       </section>
+
+      {categoryOptions.length > 0 && (
+        <section className="rounded-2xl border border-radar-border bg-radar-surface p-5">
+          <SelectChipGroup
+            label="カテゴリ"
+            description="未選択の場合は全カテゴリが対象（スニーカー・アパレル・雑貨等）"
+            options={categoryOptions.map((category) => category.slug)}
+            selected={preferences.categories}
+            formatOption={(slug) =>
+              categoryOptions.find((category) => category.slug === slug)?.label ?? slug
+            }
+            onChange={(categories) => setPreferences((prev) => ({ ...prev, categories }))}
+          />
+        </section>
+      )}
 
       <section className="rounded-2xl border border-radar-border bg-radar-surface p-5">
         <SelectChipGroup

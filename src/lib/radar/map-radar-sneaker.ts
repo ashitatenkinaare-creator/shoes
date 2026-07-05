@@ -1,3 +1,4 @@
+import { DEFAULT_SNEAKERS_CATEGORY_SLUG } from "@/lib/radar/categories";
 import { resolveRadarImageUrl } from "@/lib/radar/placeholder-image";
 import type { SneakerRadarDetail, SneakerRadarItem } from "@/types/radar";
 import type { RadarSneakerRow } from "@/types/radar-db";
@@ -15,8 +16,13 @@ export function rowToSneakerItem(row: RadarSneakerRow): SneakerRadarItem {
   if (row.is_rare) matchedReasons.push("レア");
   if (row.is_collab) matchedReasons.push("コラボ");
 
+  const categorySlug = row.radar_categories?.slug ?? DEFAULT_SNEAKERS_CATEGORY_SLUG;
+  const categoryLabel = row.radar_categories?.label ?? "スニーカー";
+
   return {
     id: toAppSneakerId(row.id),
+    categorySlug,
+    categoryLabel,
     brand: row.brand,
     modelName: row.model_name,
     imageUrl: resolveRadarImageUrl(row.image_url),

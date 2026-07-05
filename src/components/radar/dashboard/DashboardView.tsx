@@ -62,6 +62,9 @@ export default function DashboardView({ items, initialPreferences = null }: Dash
   if (preferences.collabBrands.length > 0) {
     activeFilters.push(`コラボ: ${preferences.collabBrands.join(", ")}`);
   }
+  if (preferences.categories.length > 0) {
+    activeFilters.push(`カテゴリ: ${preferences.categories.join(", ")}`);
+  }
   if (preferences.filterRare) activeFilters.push("レア");
   if (preferences.filterCollab) activeFilters.push("コラボモデル");
 

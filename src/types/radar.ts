@@ -6,6 +6,8 @@ export type SneakerPhase = "announced" | "upcoming" | "today";
 
 export type SneakerRadarItem = {
   id: string;
+  categorySlug: string;
+  categoryLabel: string;
   brand: string;
   modelName: string;
   imageUrl: string;
@@ -34,6 +36,8 @@ export type UserPreferences = {
   silhouettes: string[];
   /** コラボブランド指定（空=全て）。例: KITH, BEAMS */
   collabBrands: string[];
+  /** 表示カテゴリ slug（空=全カテゴリ）。例: sneakers, apparel */
+  categories: string[];
   /** 発表時通知 */
   notifyOnAnnouncement: boolean;
   /** 発売時通知 */

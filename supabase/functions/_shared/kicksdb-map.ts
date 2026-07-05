@@ -179,6 +179,7 @@ export function mapKicksDbProductToRow(
   return {
     source: "kicksdb",
     external_id: slug,
+    category_slug: "sneakers",
     brand,
     model_name: modelName,
     image_url: resolveImageUrl(product),

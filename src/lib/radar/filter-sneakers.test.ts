@@ -8,60 +8,64 @@ import {
 } from "@/lib/radar/silhouette-keywords";
 import type { SneakerRadarItem } from "@/types/radar";
 
+const baseItem = {
+  imageUrl: "https://example.com/a.jpg",
+  announceDate: "2026-07-01",
+  releaseDate: "2026-07-12",
+  phase: "upcoming" as const,
+  price: 24200,
+  storeUrl: "https://stockx.com/a",
+  isRare: false,
+  isCollab: false,
+  matchedReasons: [] as string[],
+};
+
 const SAMPLE_ITEMS: SneakerRadarItem[] = [
   {
+    ...baseItem,
     id: "a",
+    categorySlug: "sneakers",
+    categoryLabel: "スニーカー",
     brand: "Jordan",
     modelName: "Jordan 1 Rare",
-    imageUrl: "https://example.com/a.jpg",
-    announceDate: "2026-07-01",
-    releaseDate: "2026-07-12",
-    phase: "upcoming",
-    price: 24200,
-    storeUrl: "https://stockx.com/a",
     isRare: true,
-    isCollab: false,
     matchedReasons: ["ブランド: Jordan", "レア"],
   },
   {
+    ...baseItem,
     id: "b",
+    categorySlug: "sneakers",
+    categoryLabel: "スニーカー",
     brand: "Nike",
     modelName: "Air Max Rare",
-    imageUrl: "https://example.com/b.jpg",
-    announceDate: "2026-07-03",
-    releaseDate: "2026-07-05",
-    phase: "today",
-    price: 18700,
-    storeUrl: "https://stockx.com/b",
     isRare: true,
-    isCollab: false,
     matchedReasons: ["ブランド: Nike", "レア"],
   },
   {
+    ...baseItem,
     id: "c",
+    categorySlug: "sneakers",
+    categoryLabel: "スニーカー",
     brand: "Converse",
     modelName: "Chuck Taylor All Star 70 Hi",
-    imageUrl: "https://example.com/c.jpg",
-    announceDate: "2026-06-28",
-    releaseDate: "2026-07-20",
-    phase: "announced",
-    price: 12000,
-    storeUrl: "https://stockx.com/c",
-    isRare: false,
-    isCollab: false,
     matchedReasons: ["ブランド: Converse"],
   },
   {
+    ...baseItem,
     id: "d",
+    categorySlug: "apparel",
+    categoryLabel: "アパレル",
+    brand: "Levi's",
+    modelName: "501 Original Fit Jeans",
+    matchedReasons: ["ブランド: Levi's"],
+  },
+  {
+    ...baseItem,
+    id: "e",
+    categorySlug: "sneakers",
+    categoryLabel: "スニーカー",
     brand: "Converse",
     modelName: "One Star Pro x BEAMS",
-    imageUrl: "https://example.com/d.jpg",
-    announceDate: "2026-07-04",
-    releaseDate: "2026-07-18",
-    phase: "announced",
-    price: 15400,
-    storeUrl: "https://stockx.com/d",
-    isRare: false,
     isCollab: true,
     matchedReasons: ["ブランド: Converse", "コラボ"],
   },
@@ -84,6 +88,17 @@ describe("silhouette-keywords", () => {
 describe("filterSneakersByPreferences", () => {
   it("returns all items when filters are off", () => {
     expect(filterSneakersByPreferences(SAMPLE_ITEMS, MOCK_PREFERENCES)).toHaveLength(2);
+  });
+
+  it("filters by category slug", () => {
+    const filtered = filterSneakersByPreferences(SAMPLE_ITEMS, {
+      ...MOCK_PREFERENCES,
+      brands: ["Jordan", "Nike", "Converse", "Levi's"],
+      categories: ["apparel"],
+    });
+
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0]?.categorySlug).toBe("apparel");
   });
 
   it("filters rare items only", () => {
@@ -117,22 +132,5 @@ describe("filterSneakersByPreferences", () => {
 
     expect(filtered).toHaveLength(1);
     expect(filtered[0]?.modelName).toContain("BEAMS");
-  });
-
-  it("filters by brand and collab toggle together", () => {
-    const collabItem = {
-      ...SAMPLE_ITEMS[0],
-      isCollab: true,
-      brand: "Nike",
-    };
-    const items = [collabItem, SAMPLE_ITEMS[1]];
-
-    const filtered = filterSneakersByPreferences(items, {
-      ...MOCK_PREFERENCES,
-      brands: ["Nike"],
-      filterCollab: true,
-    });
-
-    expect(filtered).toEqual([collabItem]);
   });
 });

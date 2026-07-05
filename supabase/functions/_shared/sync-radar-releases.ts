@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { attachCategoryId } from "./category-resolve";
 import { mapKicksDbProductToRow } from "./kicksdb-map";
 import type {
   KicksDbListResponse,
@@ -98,33 +99,39 @@ export async function syncRadarReleases(
   }
 
   for (const row of rows) {
+    const dbRow = await attachCategoryId(supabase, row);
+    if (!dbRow) {
+      result.errors.push(`Unknown category (${row.category_slug}): ${row.external_id}`);
+      continue;
+    }
+
     const { data: existing, error: selectError } = await supabase
       .from("radar_sneakers")
       .select("id")
-      .eq("source", row.source)
-      .eq("external_id", row.external_id)
+      .eq("source", dbRow.source)
+      .eq("external_id", dbRow.external_id)
       .maybeSingle();
 
     if (selectError) {
-      result.errors.push(`Select failed (${row.external_id}): ${selectError.message}`);
+      result.errors.push(`Select failed (${dbRow.external_id}): ${selectError.message}`);
       continue;
     }
 
     if (existing?.id) {
       const { error: updateError } = await supabase
         .from("radar_sneakers")
-        .update(row)
+        .update(dbRow)
         .eq("id", existing.id);
 
       if (updateError) {
-        result.errors.push(`Update failed (${row.external_id}): ${updateError.message}`);
+        result.errors.push(`Update failed (${dbRow.external_id}): ${updateError.message}`);
         continue;
       }
     } else {
-      const { error: insertError } = await supabase.from("radar_sneakers").insert(row);
+      const { error: insertError } = await supabase.from("radar_sneakers").insert(dbRow);
 
       if (insertError) {
-        result.errors.push(`Insert failed (${row.external_id}): ${insertError.message}`);
+        result.errors.push(`Insert failed (${dbRow.external_id}): ${insertError.message}`);
         continue;
       }
     }

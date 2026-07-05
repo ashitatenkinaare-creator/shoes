@@ -25,6 +25,8 @@ function daysAheadIso(days: number): string {
   return date.toISOString().slice(0, 10);
 }
 
+const CATALOG_SELECT = "*, radar_categories(slug, label)";
+
 export async function fetchUpcomingSneakers(
   limit = 20,
   filters?: SneakerCatalogFilters,
@@ -33,7 +35,7 @@ export async function fetchUpcomingSneakers(
 
   let query = supabase
     .from("radar_sneakers")
-    .select("*")
+    .select(CATALOG_SELECT)
     .eq("source", "kicksdb")
     .gte("release_date", daysAgoIso(3))
     .lte("release_date", daysAheadIso(60))
@@ -68,7 +70,7 @@ export async function fetchSneakerDetailById(
 
   const { data, error } = await supabase
     .from("radar_sneakers")
-    .select("*")
+    .select(CATALOG_SELECT)
     .eq("source", "kicksdb")
     .eq("id", dbId)
     .maybeSingle();

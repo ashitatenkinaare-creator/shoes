@@ -19,6 +19,12 @@ export function filterSneakersByPreferences(
     if (!matchesAnyCollabBrand(item.modelName, item.brand, preferences.collabBrands)) {
       return false;
     }
+    if (
+      preferences.categories.length > 0 &&
+      !preferences.categories.includes(item.categorySlug)
+    ) {
+      return false;
+    }
     if (preferences.filterRare && !item.isRare) {
       return false;
     }

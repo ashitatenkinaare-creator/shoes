@@ -1,6 +1,19 @@
+/** Supabase radar_categories テーブル行型 */
+export type RadarCategoryRow = {
+  id: string;
+  slug: string;
+  label: string;
+  description: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
 /** Supabase radar_sneakers テーブル行型 */
 export type RadarSneakerRow = {
   id: string;
+  category_id: string;
   brand: string;
   model_name: string;
   image_url: string;
@@ -18,6 +31,7 @@ export type RadarSneakerRow = {
   is_collab: boolean;
   created_at: string;
   updated_at: string;
+  radar_categories?: Pick<RadarCategoryRow, "slug" | "label"> | null;
 };
 
 /** Supabase user_preferences テーブル行型 */
@@ -27,6 +41,7 @@ export type UserPreferencesRow = {
   sizes: string[];
   silhouettes: string[];
   collab_brands: string[];
+  categories: string[];
   notify_on_announcement: boolean;
   notify_on_release: boolean;
   filter_rare: boolean;
@@ -49,6 +64,7 @@ export type UpsertUserPreferencesInput = {
   sizes: string[];
   silhouettes: string[];
   collab_brands: string[];
+  categories: string[];
   notify_on_announcement: boolean;
   notify_on_release: boolean;
   filter_rare: boolean;

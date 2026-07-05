@@ -34,6 +34,7 @@ export type KicksDbListResponse = {
 export type RadarSneakerUpsertRow = {
   source: "kicksdb";
   external_id: string;
+  category_slug: string;
   brand: string;
   model_name: string;
   image_url: string;

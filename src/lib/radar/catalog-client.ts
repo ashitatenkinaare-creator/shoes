@@ -12,7 +12,7 @@ export async function fetchSneakerItemsByIds(ids: string[]): Promise<SneakerRada
   const dbIds = ids.map(toDbSneakerId);
   const { data, error } = await getSupabase()
     .from("radar_sneakers")
-    .select("*")
+    .select("*, radar_categories(slug, label)")
     .eq("source", "kicksdb")
     .in("id", dbIds);
 
