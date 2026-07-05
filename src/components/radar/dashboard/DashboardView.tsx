@@ -1,23 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Bell, Radar, Settings } from "lucide-react";
 import NewArrivalsSection from "@/components/radar/dashboard/NewArrivalsSection";
 import NotificationPanel from "@/components/radar/dashboard/NotificationPanel";
 import WatchlistPreviewSection from "@/components/radar/dashboard/WatchlistPreviewSection";
+import { MOCK_PREFERENCES } from "@/data/radar-mock";
 import { useAuthSession } from "@/hooks/useAuthSession";
+import { filterSneakersByPreferences } from "@/lib/radar/filter-sneakers";
+import { loadLocalPreferences } from "@/lib/radar/preferences";
 import { fetchNotifications } from "@/lib/radar/notifications-db";
-import type { SneakerRadarItem } from "@/types/radar";
+import type { SneakerRadarItem, UserPreferences } from "@/types/radar";
 
 interface DashboardViewProps {
   items: SneakerRadarItem[];
+  initialPreferences?: UserPreferences | null;
 }
 
-export default function DashboardView({ items }: DashboardViewProps) {
+export default function DashboardView({ items, initialPreferences = null }: DashboardViewProps) {
   const { user } = useAuthSession();
   const [notifyOpen, setNotifyOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [preferences, setPreferences] = useState<UserPreferences>(
+    initialPreferences ?? MOCK_PREFERENCES,
+  );
+
+  useEffect(() => {
+    if (user) {
+      if (initialPreferences) {
+        setPreferences(initialPreferences);
+      }
+      return;
+    }
+    setPreferences(loadLocalPreferences());
+  }, [user, initialPreferences]);
 
   useEffect(() => {
     if (!user) {
@@ -32,6 +49,15 @@ export default function DashboardView({ items }: DashboardViewProps) {
 
     void loadUnread();
   }, [user, notifyOpen]);
+
+  const displayItems = useMemo(
+    () => filterSneakersByPreferences(items, preferences),
+    [items, preferences],
+  );
+
+  const activeFilters: string[] = [];
+  if (preferences.filterRare) activeFilters.push("レア");
+  if (preferences.filterCollab) activeFilters.push("コラボ");
 
   return (
     <>
@@ -48,9 +74,14 @@ export default function DashboardView({ items }: DashboardViewProps) {
       <section className="rounded-2xl border border-radar-border bg-gradient-to-br from-radar-surface to-radar-muted p-5">
         <p className="text-sm text-slate-400">本日のピックアップ</p>
         <p className="mt-1 text-2xl font-black text-white">
-          {items.length}
+          {displayItems.length}
           <span className="ml-1 text-base font-bold text-slate-400">件の新作</span>
         </p>
+        {activeFilters.length > 0 && (
+          <p className="mt-2 text-xs text-radar-accent">
+            フィルタ: {activeFilters.join(" / ")} のみ表示中
+          </p>
+        )}
         <p className="mt-3 text-xs leading-relaxed text-slate-500">
           ログイン後、条件設定とウォッチリストに基づき2段階通知を配信します
         </p>
@@ -80,7 +111,7 @@ export default function DashboardView({ items }: DashboardViewProps) {
       </section>
 
       <div className="mt-8">
-        <NewArrivalsSection items={items} />
+        <NewArrivalsSection items={displayItems} />
       </div>
 
       <WatchlistPreviewSection />

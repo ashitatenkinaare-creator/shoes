@@ -5,6 +5,8 @@ export const MOCK_PREFERENCES: UserPreferences = {
   sizes: ["27.0", "27.5", "28.0"],
   notifyOnAnnouncement: true,
   notifyOnRelease: true,
+  filterRare: false,
+  filterCollab: false,
 };
 
 export const AVAILABLE_BRANDS = [

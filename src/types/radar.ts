@@ -34,6 +34,10 @@ export type UserPreferences = {
   notifyOnAnnouncement: boolean;
   /** 発売時通知 */
   notifyOnRelease: boolean;
+  /** レアスニーカーのみ表示 */
+  filterRare: boolean;
+  /** コラボモデルのみ表示 */
+  filterCollab: boolean;
 };
 
 export type RadarNavKey = "dashboard" | "watchlist" | "settings" | "auth";

@@ -7,6 +7,8 @@ export function rowToPreferences(row: UserPreferencesRow): UserPreferences {
     sizes: row.sizes,
     notifyOnAnnouncement: row.notify_on_announcement,
     notifyOnRelease: row.notify_on_release,
+    filterRare: row.filter_rare ?? false,
+    filterCollab: row.filter_collab ?? false,
   };
 }
 
@@ -20,5 +22,7 @@ export function preferencesToRow(
     sizes: preferences.sizes,
     notify_on_announcement: preferences.notifyOnAnnouncement,
     notify_on_release: preferences.notifyOnRelease,
+    filter_rare: preferences.filterRare,
+    filter_collab: preferences.filterCollab,
   };
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { Check, Cloud, Megaphone, Rocket } from "lucide-react";
+import { Check, Cloud, Megaphone, Rocket, Sparkles, Users } from "lucide-react";
 import SelectChipGroup from "@/components/radar/settings/SelectChipGroup";
 import {
   AVAILABLE_BRANDS,
@@ -36,6 +36,7 @@ function NotificationToggle({
         type="checkbox"
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
+        aria-label={label}
         className="sr-only"
       />
       <span
@@ -164,6 +165,29 @@ export default function PreferenceForm() {
           selected={preferences.sizes}
           onChange={(sizes) => setPreferences((prev) => ({ ...prev, sizes }))}
           formatOption={(size) => `${size} cm`}
+        />
+      </section>
+
+      <section className="space-y-3">
+        <div>
+          <h2 className="text-sm font-bold text-white">レア・コラボフィルタ</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            ダッシュボードの新作一覧を、レア度・コラボモデルで絞り込みます
+          </p>
+        </div>
+        <NotificationToggle
+          label="レアスニーカーのみ表示"
+          description="OG / Retro / Reimagined など名称解析でレア判定されたモデル"
+          icon={Sparkles}
+          checked={preferences.filterRare}
+          onChange={(filterRare) => setPreferences((prev) => ({ ...prev, filterRare }))}
+        />
+        <NotificationToggle
+          label="コラボモデルのみ表示"
+          description="× 表記や Travis Scott / Off-White などのコラボ判定"
+          icon={Users}
+          checked={preferences.filterCollab}
+          onChange={(filterCollab) => setPreferences((prev) => ({ ...prev, filterCollab }))}
         />
       </section>
 

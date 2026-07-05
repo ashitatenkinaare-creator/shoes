@@ -5,6 +5,7 @@ import {
   toDbSneakerId,
 } from "@/lib/radar/map-radar-sneaker";
 import { createServerSupabase } from "@/lib/supabase/server";
+import type { SneakerCatalogFilters } from "@/lib/radar/filter-sneakers";
 import type { SneakerRadarDetail, SneakerRadarItem } from "@/types/radar";
 import type { RadarDbResult, RadarSneakerRow } from "@/types/radar-db";
 
@@ -26,16 +27,26 @@ function daysAheadIso(days: number): string {
 
 export async function fetchUpcomingSneakers(
   limit = 20,
+  filters?: SneakerCatalogFilters,
 ): Promise<RadarDbResult<SneakerRadarItem[]>> {
   const supabase = await createServerSupabase();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("radar_sneakers")
     .select("*")
     .gte("release_date", daysAgoIso(3))
     .lte("release_date", daysAheadIso(60))
     .order("release_date", { ascending: true })
     .limit(limit);
+
+  if (filters?.filterRare) {
+    query = query.eq("is_rare", true);
+  }
+  if (filters?.filterCollab) {
+    query = query.eq("is_collab", true);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     return {

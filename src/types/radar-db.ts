@@ -27,6 +27,8 @@ export type UserPreferencesRow = {
   sizes: string[];
   notify_on_announcement: boolean;
   notify_on_release: boolean;
+  filter_rare: boolean;
+  filter_collab: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -45,6 +47,8 @@ export type UpsertUserPreferencesInput = {
   sizes: string[];
   notify_on_announcement: boolean;
   notify_on_release: boolean;
+  filter_rare: boolean;
+  filter_collab: boolean;
 };
 
 /** CRUD 共通レスポンス */

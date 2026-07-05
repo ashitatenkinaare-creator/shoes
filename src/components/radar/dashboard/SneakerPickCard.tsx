@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 import { Bell, BellOff, ChevronRight } from "lucide-react";
 import {
   formatDateJa,
@@ -40,6 +39,20 @@ export default function SneakerPickCard({ item }: SneakerPickCardProps) {
           >
             {getPhaseLabel(item.phase)}
           </span>
+          {(item.isRare || item.isCollab) && (
+            <div className="absolute top-3 right-3 flex flex-col gap-1">
+              {item.isRare && (
+                <span className="rounded-full bg-amber-500/90 px-2 py-0.5 text-[10px] font-bold text-black">
+                  レア
+                </span>
+              )}
+              {item.isCollab && (
+                <span className="rounded-full bg-violet-500/90 px-2 py-0.5 text-[10px] font-bold text-white">
+                  コラボ
+                </span>
+              )}
+            </div>
+          )}
         </Link>
 
         <div className="flex flex-1 flex-col p-4">
