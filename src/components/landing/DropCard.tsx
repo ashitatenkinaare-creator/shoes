@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import LandingProductImage from "@/components/landing/LandingProductImage";
 import { Timer } from "lucide-react";
 import type { DropItem } from "@/types/drop";
 
@@ -22,7 +22,7 @@ export default function DropCard({ item }: DropCardProps) {
           <span className="absolute top-3 right-3 z-10 rounded-full border border-slate-700 bg-slate-900/80 p-1.5 text-slate-400 backdrop-blur-sm">
             <Timer className="h-3.5 w-3.5" aria-hidden="true" />
           </span>
-          <Image
+          <LandingProductImage
             src={item.imageUrl}
             alt={item.name}
             fill

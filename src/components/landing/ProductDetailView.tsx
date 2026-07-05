@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import LandingProductImage from "@/components/landing/LandingProductImage";
 import Link from "next/link";
 import { useState } from "react";
 import { Bell } from "lucide-react";
@@ -25,7 +25,7 @@ export default function ProductDetailView({ product, related }: ProductDetailVie
       <div className="mt-8 grid gap-10 lg:grid-cols-2 lg:gap-16">
         <div>
           <div className="relative aspect-square overflow-hidden rounded-xl bg-slate-900">
-            <Image
+            <LandingProductImage
               src={activeImage}
               alt={product.title}
               fill
@@ -44,7 +44,7 @@ export default function ProductDetailView({ product, related }: ProductDetailVie
                   activeImage === src ? "border-drop-orange" : "border-slate-700"
                 }`}
               >
-                <Image src={src} alt="" fill className="object-cover" sizes="64px" />
+                <LandingProductImage src={src} alt="" fill className="object-cover" sizes="64px" />
               </button>
             ))}
           </div>

@@ -1,10 +1,15 @@
 import { test, expect } from "@playwright/test";
+import { expectMatchedSneakerList } from "./helpers/radar-catalog";
 
 const PREFERENCES_STORAGE_KEY = "sneaker-radar-preferences";
 
 test.describe("Rare/Collab filter", () => {
-  test("設定画面でレア・コラボフィルタを保存できる", async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto("/settings");
+    await expect(page.getByRole("button", { name: "条件を保存する" })).toBeVisible();
+  });
+
+  test("設定画面でレア・コラボフィルタを保存できる", async ({ page }) => {
     await page.evaluate((key) => localStorage.removeItem(key), PREFERENCES_STORAGE_KEY);
     await page.reload();
     await expect(page.getByRole("button", { name: "条件を保存する" })).toBeVisible();
@@ -41,12 +46,7 @@ test.describe("Rare/Collab filter", () => {
 
     await expect(page.getByText("フィルタ: レア のみ表示中")).toBeVisible();
 
-    const section = page.locator("section").filter({
-      has: page.getByRole("heading", { name: "条件にマッチした新作" }),
-    });
-    const sneakers = section.locator(":scope > ul > li");
-    await expect(sneakers.first()).toBeVisible();
-    expect(await sneakers.count()).toBeGreaterThan(0);
+    const sneakers = await expectMatchedSneakerList(page);
 
     for (let i = 0, count = await sneakers.count(); i < count; i += 1) {
       await expect(sneakers.nth(i).getByText("レア", { exact: true }).first()).toBeVisible();

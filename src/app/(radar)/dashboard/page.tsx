@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import DashboardView from "@/components/radar/dashboard/DashboardView";
-import { fetchUpcomingSneakers } from "@/lib/radar/catalog-db";
+import { fetchUpcomingSneakers } from "@/lib/radar/catalog-db.server";
 import { fetchServerUserPreferences } from "@/lib/radar/preferences-server";
 import { createServerSupabase } from "@/lib/supabase/server";
 

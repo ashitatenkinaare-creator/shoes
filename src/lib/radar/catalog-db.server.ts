@@ -1,4 +1,4 @@
-import type { PostgrestError } from "@supabase/supabase-js";
+import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
 import {
   rowToSneakerDetail,
   rowToSneakerItem,
@@ -25,22 +25,35 @@ function daysAheadIso(days: number): string {
   return date.toISOString().slice(0, 10);
 }
 
-const CATALOG_SELECT = "*, radar_categories(slug, label)";
+const CATALOG_SELECT_WITH_CATEGORY = "*, radar_categories(slug, label)";
+const CATALOG_SELECT_BASE = "*";
 
-export async function fetchUpcomingSneakers(
-  limit = 20,
+function isMissingCategoriesRelation(error: PostgrestError): boolean {
+  return error.message.includes("radar_categories");
+}
+
+type CatalogQueryResult = {
+  data: unknown;
+  error: PostgrestError | null;
+};
+
+async function runCatalogQuery(
+  supabase: SupabaseClient,
+  select: string,
   filters?: SneakerCatalogFilters,
-): Promise<RadarDbResult<SneakerRadarItem[]>> {
-  const supabase = await createServerSupabase();
-
+  limit?: number,
+): Promise<CatalogQueryResult> {
   let query = supabase
     .from("radar_sneakers")
-    .select(CATALOG_SELECT)
+    .select(select)
     .eq("source", "kicksdb")
-    .gte("release_date", daysAgoIso(3))
+    .gte("release_date", daysAgoIso(540))
     .lte("release_date", daysAheadIso(60))
-    .order("release_date", { ascending: true })
-    .limit(limit);
+    .order("release_date", { ascending: true });
+
+  if (typeof limit === "number") {
+    query = query.limit(limit);
+  }
 
   if (filters?.filterRare) {
     query = query.eq("is_rare", true);
@@ -49,7 +62,31 @@ export async function fetchUpcomingSneakers(
     query = query.eq("is_collab", true);
   }
 
-  const { data, error } = await query;
+  return query;
+}
+
+async function selectCatalogRows(
+  supabase: SupabaseClient,
+  filters?: SneakerCatalogFilters,
+  limit?: number,
+): Promise<CatalogQueryResult> {
+  const withCategory = await runCatalogQuery(supabase, CATALOG_SELECT_WITH_CATEGORY, filters, limit);
+  if (!withCategory.error) return withCategory;
+
+  if (isMissingCategoriesRelation(withCategory.error)) {
+    return runCatalogQuery(supabase, CATALOG_SELECT_BASE, filters, limit);
+  }
+
+  return withCategory;
+}
+
+/** Server Component 専用カタログ取得 */
+export async function fetchUpcomingSneakers(
+  limit = 20,
+  filters?: SneakerCatalogFilters,
+): Promise<RadarDbResult<SneakerRadarItem[]>> {
+  const supabase = await createServerSupabase();
+  const { data, error } = await selectCatalogRows(supabase, filters, limit);
 
   if (error) {
     return {
@@ -68,12 +105,25 @@ export async function fetchSneakerDetailById(
   const supabase = await createServerSupabase();
   const dbId = toDbSneakerId(appOrDbId);
 
-  const { data, error } = await supabase
+  const withCategory = await supabase
     .from("radar_sneakers")
-    .select(CATALOG_SELECT)
+    .select(CATALOG_SELECT_WITH_CATEGORY)
     .eq("source", "kicksdb")
     .eq("id", dbId)
     .maybeSingle();
+
+  let result: CatalogQueryResult = withCategory;
+
+  if (withCategory.error && isMissingCategoriesRelation(withCategory.error)) {
+    result = await supabase
+      .from("radar_sneakers")
+      .select(CATALOG_SELECT_BASE)
+      .eq("source", "kicksdb")
+      .eq("id", dbId)
+      .maybeSingle();
+  }
+
+  const { data, error } = result;
 
   if (error) {
     return {
@@ -96,7 +146,7 @@ export async function countUpcomingSneakers(): Promise<number> {
     .from("radar_sneakers")
     .select("*", { count: "exact", head: true })
     .eq("source", "kicksdb")
-    .gte("release_date", daysAgoIso(3))
+    .gte("release_date", daysAgoIso(540))
     .lte("release_date", daysAheadIso(60));
 
   if (error) return 0;

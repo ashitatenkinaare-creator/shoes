@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import Image from "next/image";
+import LandingProductImage from "@/components/landing/LandingProductImage";
 import Link from "next/link";
 
 export default function RegistrationForm() {
@@ -119,8 +119,8 @@ export default function RegistrationForm() {
         </p>
         <div className="mt-3 flex items-center gap-3">
           <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
-            <Image
-              src="https://images.unsplash.com/photo-1587563871167-1ee9a731e6cd?w=200&h=200&fit=crop"
+            <LandingProductImage
+              src="https://images.stockx.com/images/Air-Jordan-4-Retro-Black-Cat-2025-Product.jpg?fit=fill&bg=FFFFFF&w=200&h=200&fm=webp"
               alt=""
               fill
               className="object-cover"

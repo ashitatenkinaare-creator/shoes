@@ -1,6 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+/**
+ * App Router の Server Component / Route Handler 専用。
+ * Client Component から import しないこと（categories-db.ts 等の client 版を使う）。
+ */
 export async function createServerSupabase() {
   const cookieStore = await cookies();
 

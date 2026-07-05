@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import LandingProductImage from "@/components/landing/LandingProductImage";
 import type { VaultItem } from "@/types/drop";
 
 interface VaultCardProps {
@@ -23,7 +23,7 @@ export default function VaultCard({ item }: VaultCardProps) {
             {item.badge}
           </span>
         )}
-        <Image
+        <LandingProductImage
           src={item.imageUrl}
           alt={item.name}
           fill

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SneakerDetailView from "@/components/radar/sneaker/SneakerDetailView";
-import { fetchSneakerDetailById } from "@/lib/radar/catalog-db";
+import { fetchSneakerDetailById } from "@/lib/radar/catalog-db.server";
 
 interface SneakerDetailPageProps {
   params: Promise<{ id: string }>;

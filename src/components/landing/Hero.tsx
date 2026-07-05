@@ -1,4 +1,4 @@
-import Image from "next/image";
+import LandingProductImage from "@/components/landing/LandingProductImage";
 import type { FeaturedDrop } from "@/types/drop";
 
 interface HeroProps {
@@ -9,7 +9,7 @@ export default function Hero({ drop }: HeroProps) {
   return (
     <section className="relative overflow-hidden border-b border-slate-800">
       <div className="absolute inset-0">
-        <Image
+        <LandingProductImage
           src={drop.imageUrl}
           alt=""
           fill

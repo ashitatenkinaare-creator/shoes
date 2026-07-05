@@ -5,13 +5,16 @@ import type {
   VaultItem,
 } from "@/types/drop";
 
+const STOCKX = (path: string, size = 700) =>
+  `https://images.stockx.com/images/${path}?fit=fill&bg=FFFFFF&w=${size}&h=${size}&fm=webp`;
+
 export const FEATURED_DROP: FeaturedDrop = {
   tag: "LIVE HYPE DROP",
   title: "AERO-MAX PHASE 01",
   description:
     "The future of performance engineering. Ultra-lightweight carbon chassis with adaptive tension lacing system.",
   imageUrl:
-    "https://images.unsplash.com/photo-1606107557195-0a29ba4781a1?w=1200&h=700&fit=crop",
+    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1200&h=700&fit=crop",
 };
 
 export const UPCOMING_DROPS: DropItem[] = [
@@ -35,8 +38,7 @@ export const UPCOMING_DROPS: DropItem[] = [
     price: 210,
     releaseDate: "NOV 02, 2026",
     releaseTime: "10:00 AM",
-    imageUrl:
-      "https://images.unsplash.com/photo-1556906781-95a18896efac?w=600&h=600&fit=crop",
+    imageUrl: STOCKX("Air-Jordan-4-Retro-Black-Cat-2025-Product.jpg"),
     badge: "LAUNCHING SOON",
   },
   {
@@ -59,8 +61,7 @@ export const UPCOMING_DROPS: DropItem[] = [
     price: 185,
     releaseDate: "NOV 15, 2026",
     releaseTime: "09:30 AM",
-    imageUrl:
-      "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&h=600&fit=crop",
+    imageUrl: STOCKX("New-Balance-990v6-Grey-Product.jpg"),
     badge: "LAUNCHING SOON",
   },
 ];
@@ -75,7 +76,7 @@ export const VAULT_ITEMS: VaultItem[] = [
     releaseDate: "LIVE NOW",
     releaseTime: "",
     imageUrl:
-      "https://images.unsplash.com/photo-1600185365926-3a95ce3ead9e?w=600&h=600&fit=crop",
+      "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop",
     badge: "LIVE NOW",
     status: "live",
     brandKey: "nike",
@@ -88,8 +89,7 @@ export const VAULT_ITEMS: VaultItem[] = [
     price: 180,
     releaseDate: "UPCOMING",
     releaseTime: "OCT 24",
-    imageUrl:
-      "https://images.unsplash.com/photo-1556906781-95a18896efac?w=600&h=600&fit=crop",
+    imageUrl: STOCKX("Air-Jordan-1-Retro-High-OG-Chicago-Reimagined-Product.jpg"),
     badge: "LIMITED",
     status: "limited",
     brandKey: "jordan",
@@ -102,8 +102,7 @@ export const VAULT_ITEMS: VaultItem[] = [
     price: 210,
     releaseDate: "NOV 02",
     releaseTime: "",
-    imageUrl:
-      "https://images.unsplash.com/photo-1587563871167-1ee9a731e6cd?w=600&h=600&fit=crop",
+    imageUrl: STOCKX("Air-Jordan-4-Retro-Black-Cat-2025-Product.jpg"),
     badge: "LIVE NOW",
     status: "live",
     brandKey: "jordan",
@@ -117,8 +116,7 @@ export const VAULT_ITEMS: VaultItem[] = [
     price: 250,
     releaseDate: "NOV 10",
     releaseTime: "",
-    imageUrl:
-      "https://images.unsplash.com/photo-1605348532760-6753bf2a5b6?w=600&h=600&fit=crop",
+    imageUrl: STOCKX("adidas-Yeezy-Boost-350-V2-Carbon-Product.jpg"),
     badge: "LIMITED",
     status: "limited",
     brandKey: "yeezy",
@@ -147,12 +145,11 @@ export const PRODUCT_DETAILS: Record<string, ProductDetail> = {
     description:
       "An icon reborn. Premium full-grain leather upper with classic high-top silhouette. The shoe that started it all, returning in its most authentic form.",
     price: 180,
-    imageUrl:
-      "https://images.unsplash.com/photo-1556906781-95a18896efac?w=800&h=800&fit=crop",
+    imageUrl: STOCKX("Air-Jordan-1-Retro-High-OG-Chicago-Reimagined-Product.jpg", 800),
     gallery: [
-      "https://images.unsplash.com/photo-1556906781-95a18896efac?w=800&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1587563871167-1ee9a731e6cd?w=800&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1606107557195-0a29ba4781a1?w=800&h=800&fit=crop",
+      STOCKX("Air-Jordan-1-Retro-High-OG-Chicago-Reimagined-Product.jpg", 800),
+      STOCKX("Air-Jordan-4-Retro-Black-Cat-2025-Product.jpg", 800),
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=800&fit=crop",
     ],
     specs: [
       { label: "Material", value: "Full-Grain Leather" },

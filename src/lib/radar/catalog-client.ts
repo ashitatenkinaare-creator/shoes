@@ -5,16 +5,37 @@ import { rowToSneakerItem, toDbSneakerId } from "@/lib/radar/map-radar-sneaker";
 import type { SneakerRadarItem } from "@/types/radar";
 import type { RadarSneakerRow } from "@/types/radar-db";
 
+const CATALOG_SELECT_WITH_CATEGORY = "*, radar_categories(slug, label)";
+const CATALOG_SELECT_BASE = "*";
+
+async function selectSneakersByIds(dbIds: string[]) {
+  const supabase = getSupabase();
+
+  const withCategory = await supabase
+    .from("radar_sneakers")
+    .select(CATALOG_SELECT_WITH_CATEGORY)
+    .eq("source", "kicksdb")
+    .in("id", dbIds);
+
+  if (!withCategory.error) return withCategory;
+
+  if (withCategory.error.message.includes("radar_categories")) {
+    return supabase
+      .from("radar_sneakers")
+      .select(CATALOG_SELECT_BASE)
+      .eq("source", "kicksdb")
+      .in("id", dbIds);
+  }
+
+  return withCategory;
+}
+
 /** クライアントからカタログ ID 一覧を Supabase で解決 */
 export async function fetchSneakerItemsByIds(ids: string[]): Promise<SneakerRadarItem[]> {
   if (ids.length === 0) return [];
 
   const dbIds = ids.map(toDbSneakerId);
-  const { data, error } = await getSupabase()
-    .from("radar_sneakers")
-    .select("*, radar_categories(slug, label)")
-    .eq("source", "kicksdb")
-    .in("id", dbIds);
+  const { data, error } = await selectSneakersByIds(dbIds);
 
   if (error || !data) return [];
 

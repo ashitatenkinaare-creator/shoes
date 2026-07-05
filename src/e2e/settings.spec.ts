@@ -10,7 +10,7 @@ test.describe("Settings Page (正常系動作テスト)", () => {
 
   test("設定フォーム（ブランド・サイズ・通知）が表示されていること", async ({ page }) => {
     await expect(page.locator("form")).toBeVisible();
-    await expect(page.getByRole("group", { name: /ブランド/i })).toBeVisible();
+    await expect(page.getByRole("group", { name: "ブランド / メーカー" })).toBeVisible();
     await expect(page.getByRole("group", { name: /サイズ/i })).toBeVisible();
     await expect(page.getByRole("checkbox", { name: /新作発表通知/i })).toBeVisible();
     await expect(page.getByRole("checkbox", { name: /発売当日通知/i })).toBeVisible();
@@ -20,7 +20,7 @@ test.describe("Settings Page (正常系動作テスト)", () => {
   test("未ログイン状態で設定を保存し、localStorageに反映されること", async ({ page }) => {
     await page.evaluate((key) => localStorage.removeItem(key), PREFERENCES_STORAGE_KEY);
 
-    const brandGroup = page.getByRole("group", { name: /ブランド/i });
+    const brandGroup = page.getByRole("group", { name: "ブランド / メーカー" });
     await brandGroup.getByRole("button", { name: "Adidas" }).click();
 
     await page.getByRole("button", { name: "条件を保存する" }).click();
@@ -41,7 +41,7 @@ test.describe("Settings Page (正常系動作テスト)", () => {
     await page.reload();
     await expect(page.getByRole("button", { name: "条件を保存する" })).toBeVisible();
 
-    const brandGroup = page.getByRole("group", { name: /ブランド/i });
+    const brandGroup = page.getByRole("group", { name: "ブランド / メーカー" });
 
     for (const brand of ["Nike", "Jordan", "New Balance"]) {
       const button = brandGroup.getByRole("button", { name: brand });
