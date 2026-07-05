@@ -1,6 +1,6 @@
 # Sneaker Radar 実装・品質チェックリスト (難易度C)
 
-最終確認: 2026-07-05 — Vitest 22/22 passed、Playwright 18/18 passed
+最終確認: 2026-07-05 — Vitest 22/22 passed、Playwright 18/18 passed（タスク1・2完了後）
 
 ## 1. 自動テスト (Playwrightにて実行)
 
@@ -34,6 +34,7 @@
 
 ## 3. 今回の修正メモ
 
+- **feat/logic-refactor**: `model-matching.ts` で正規化・型を共通化、コラボ UI ブランドを config 駆動に
+- **feat/watchlist-ui-improvement**: ウォッチリストを発売日順ソート、2列グリッド、レア/コラボバッジ、次の発売サマリー
 - `src/e2e/helpers/radar-catalog.ts`: スニーカーカード行のセレクタを `region` + `:has(a[href^="/sneaker/"])` に修正
-- `src/e2e/watchlist.spec.ts`: 重複リンクを避けてユニーク ID をシード
 - `src/lib/radar/catalog-db.server.ts` / `catalog-client.ts`: `radar_categories` 未適用 DB 向けフォールバック
