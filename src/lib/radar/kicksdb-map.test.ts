@@ -2,6 +2,13 @@ import { describe, expect, it } from "vitest";
 import { detectRareCollabFlags, mapKicksDbProductToRow } from "@/lib/radar/kicksdb-sync";
 
 describe("detectRareCollabFlags", () => {
+  it("loads keyword definitions from config/rare-collab-keywords.json", async () => {
+    const { rareCollabKeywordsConfig } = await import("@/lib/radar/kicksdb-sync");
+    expect(rareCollabKeywordsConfig.rare.words).toContain("OG");
+    expect(rareCollabKeywordsConfig.collab.words).toContain("travis scott");
+    expect(rareCollabKeywordsConfig.collab.regex).toContain("\\bx\\s+");
+  });
+
   it("detects rare from OG / Reimagined / quoted colorway", () => {
     expect(detectRareCollabFlags("Air Jordan 1 Retro High OG 'Chicago Reimagined'", "Jordan")).toEqual({
       is_rare: true,

@@ -1,0 +1,41 @@
+{
+  "rare": {
+    "words": [
+      "OG",
+      "Retro",
+      "Reimagined",
+      "Limited",
+      "Exclusive",
+      "Sample",
+      "Prototype",
+      "Premium",
+      "Anniversary",
+      "Special Edition"
+    ],
+    "quotedColorway": true
+  },
+  "collab": {
+    "words": [
+      "travis scott",
+      "fragment",
+      "sacai",
+      "union",
+      "strangelove",
+      "clot",
+      "ambush",
+      "nocta",
+      "kaws",
+      "supreme",
+      "stone island",
+      "comme des garçons",
+      "cdg"
+    ],
+    "regex": [
+      "\\bx\\s+",
+      "\\s+x\\s+",
+      "×",
+      "\\bcollab(orati(on|e))?\\b",
+      "\\boff-?white\\b"
+    ]
+  }
+}

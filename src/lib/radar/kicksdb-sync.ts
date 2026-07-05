@@ -12,6 +12,10 @@ import type {
 export type { KicksDbStockxProduct, SyncRadarOptions, SyncRadarResult };
 
 export { fetchUpcomingStockxProducts, mapKicksDbProductToRow, syncRadarReleases, detectRareCollabFlags };
+export {
+  rareCollabKeywordsConfig,
+  loadRareCollabKeywordPatterns,
+} from "../../../supabase/functions/_shared/rare-collab-keywords";
 
 export function buildSyncOptions(apiKey: string): SyncRadarOptions {
   return {
