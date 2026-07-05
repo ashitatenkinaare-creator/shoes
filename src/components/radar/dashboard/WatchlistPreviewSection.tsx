@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import RadarProductImage from "@/components/radar/RadarProductImage";
 import { ChevronRight } from "lucide-react";
 import { formatDateJa, getPhaseLabel, getPhaseStyle } from "@/lib/radar/format";
 import { useWatchlist } from "@/hooks/useWatchlist";
@@ -41,7 +41,7 @@ export default function WatchlistPreviewSection() {
                 className="block overflow-hidden rounded-xl border border-radar-border bg-radar-surface transition-colors hover:border-radar-accent/40"
               >
                 <div className="relative aspect-square">
-                  <Image
+                  <RadarProductImage
                     src={item.imageUrl}
                     alt={item.modelName}
                     fill

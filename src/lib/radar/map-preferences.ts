@@ -5,6 +5,8 @@ export function rowToPreferences(row: UserPreferencesRow): UserPreferences {
   return {
     brands: row.brands,
     sizes: row.sizes,
+    silhouettes: row.silhouettes ?? [],
+    collabBrands: row.collab_brands ?? [],
     notifyOnAnnouncement: row.notify_on_announcement,
     notifyOnRelease: row.notify_on_release,
     filterRare: row.filter_rare ?? false,
@@ -20,6 +22,8 @@ export function preferencesToRow(
     user_id: userId,
     brands: preferences.brands,
     sizes: preferences.sizes,
+    silhouettes: preferences.silhouettes,
+    collab_brands: preferences.collabBrands,
     notify_on_announcement: preferences.notifyOnAnnouncement,
     notify_on_release: preferences.notifyOnRelease,
     filter_rare: preferences.filterRare,

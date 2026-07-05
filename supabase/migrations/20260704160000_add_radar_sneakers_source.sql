@@ -1,6 +1,6 @@
 -- KicksDB 同期用: 外部ソース識別子
 alter table public.radar_sneakers
-  add column if not exists source text not null default 'seed',
+  add column if not exists source text not null default 'kicksdb',
   add column if not exists external_id text;
 
 comment on column public.radar_sneakers.source is 'データソース (seed | kicksdb 等)';

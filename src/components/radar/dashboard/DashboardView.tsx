@@ -56,8 +56,14 @@ export default function DashboardView({ items, initialPreferences = null }: Dash
   );
 
   const activeFilters: string[] = [];
+  if (preferences.silhouettes.length > 0) {
+    activeFilters.push(`シルエット: ${preferences.silhouettes.join(", ")}`);
+  }
+  if (preferences.collabBrands.length > 0) {
+    activeFilters.push(`コラボ: ${preferences.collabBrands.join(", ")}`);
+  }
   if (preferences.filterRare) activeFilters.push("レア");
-  if (preferences.filterCollab) activeFilters.push("コラボ");
+  if (preferences.filterCollab) activeFilters.push("コラボモデル");
 
   return (
     <>

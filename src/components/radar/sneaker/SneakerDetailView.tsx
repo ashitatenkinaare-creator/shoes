@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import RadarProductImage from "@/components/radar/RadarProductImage";
 import {
   ArrowLeft,
   Bell,
@@ -39,7 +39,7 @@ export default function SneakerDetailView({ sneaker }: SneakerDetailViewProps) {
 
       <div className="overflow-hidden rounded-2xl border border-radar-border bg-radar-surface">
         <div className="relative aspect-square w-full sm:aspect-[16/10]">
-          <Image
+          <RadarProductImage
             src={sneaker.imageUrl}
             alt={sneaker.modelName}
             fill

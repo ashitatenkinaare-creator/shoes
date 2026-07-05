@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import RadarProductImage from "@/components/radar/RadarProductImage";
 import { Bell, BellOff, ChevronRight } from "lucide-react";
 import {
   formatDateJa,
@@ -27,7 +27,7 @@ export default function SneakerPickCard({ item }: SneakerPickCardProps) {
           href={`/sneaker/${item.id}`}
           className="relative aspect-square w-full shrink-0 sm:w-36 md:w-40"
         >
-          <Image
+          <RadarProductImage
             src={item.imageUrl}
             alt={item.modelName}
             fill

@@ -28,7 +28,10 @@
       "supreme",
       "stone island",
       "comme des garçons",
-      "cdg"
+      "cdg",
+      "kith",
+      "beams",
+      "brooks brothers"
     ],
     "regex": [
       "\\bx\\s+",

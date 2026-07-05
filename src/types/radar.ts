@@ -30,6 +30,10 @@ export type SneakerRadarDetail = SneakerRadarItem & {
 export type UserPreferences = {
   brands: string[];
   sizes: string[];
+  /** シルエット指定（空=全て）。例: All Star, One Star */
+  silhouettes: string[];
+  /** コラボブランド指定（空=全て）。例: KITH, BEAMS */
+  collabBrands: string[];
   /** 発表時通知 */
   notifyOnAnnouncement: boolean;
   /** 発売時通知 */

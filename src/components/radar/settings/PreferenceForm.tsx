@@ -8,6 +8,10 @@ import {
   AVAILABLE_SIZES,
   MOCK_PREFERENCES,
 } from "@/data/radar-mock";
+import {
+  AVAILABLE_COLLAB_BRANDS,
+  AVAILABLE_SILHOUETTES,
+} from "@/lib/radar/silhouette-keywords";
 import { useAuthSession } from "@/hooks/useAuthSession";
 import {
   loadLocalPreferences,
@@ -159,6 +163,26 @@ export default function PreferenceForm() {
 
       <section className="rounded-2xl border border-radar-border bg-radar-surface p-5">
         <SelectChipGroup
+          label="シルエット / モデル"
+          description="未選択の場合は全シルエットが対象（例: Converse All Star, One Star）"
+          options={AVAILABLE_SILHOUETTES}
+          selected={preferences.silhouettes}
+          onChange={(silhouettes) => setPreferences((prev) => ({ ...prev, silhouettes }))}
+        />
+      </section>
+
+      <section className="rounded-2xl border border-radar-border bg-radar-surface p-5">
+        <SelectChipGroup
+          label="コラボブランド"
+          description="KITH / BEAMS 等を指定（未選択の場合はコラボブランドで絞り込まない）"
+          options={[...AVAILABLE_COLLAB_BRANDS]}
+          selected={preferences.collabBrands}
+          onChange={(collabBrands) => setPreferences((prev) => ({ ...prev, collabBrands }))}
+        />
+      </section>
+
+      <section className="rounded-2xl border border-radar-border bg-radar-surface p-5">
+        <SelectChipGroup
           label="サイズ（cm）"
           description="在庫・抽選情報のフィルターに使用します"
           options={AVAILABLE_SIZES}
@@ -184,7 +208,7 @@ export default function PreferenceForm() {
         />
         <NotificationToggle
           label="コラボモデルのみ表示"
-          description="× 表記や Travis Scott / Off-White などのコラボ判定"
+          description="× 表記や KITH / BEAMS / Travis Scott などのコラボ判定"
           icon={Users}
           checked={preferences.filterCollab}
           onChange={(filterCollab) => setPreferences((prev) => ({ ...prev, filterCollab }))}

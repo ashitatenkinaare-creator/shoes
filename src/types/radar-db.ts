@@ -25,6 +25,8 @@ export type UserPreferencesRow = {
   user_id: string;
   brands: string[];
   sizes: string[];
+  silhouettes: string[];
+  collab_brands: string[];
   notify_on_announcement: boolean;
   notify_on_release: boolean;
   filter_rare: boolean;
@@ -45,6 +47,8 @@ export type WatchlistRow = {
 export type UpsertUserPreferencesInput = {
   brands: string[];
   sizes: string[];
+  silhouettes: string[];
+  collab_brands: string[];
   notify_on_announcement: boolean;
   notify_on_release: boolean;
   filter_rare: boolean;
@@ -56,18 +60,3 @@ export type RadarDbResult<T = unknown> = {
   data: T | null;
   error: string | null;
 };
-
-/** シードデータと UI モックの ID 対応 */
-export const RADAR_SNEAKER_ID_MAP = {
-  "sr-001": "11111111-1111-4111-8111-111111110001",
-  "sr-002": "11111111-1111-4111-8111-111111110002",
-  "sr-003": "11111111-1111-4111-8111-111111110003",
-  "sr-004": "11111111-1111-4111-8111-111111110004",
-} as const;
-
-export const RADAR_SNEAKER_IDS = Object.values(RADAR_SNEAKER_ID_MAP);
-
-/** DB UUID → UI モック ID */
-export const RADAR_SNEAKER_DB_TO_APP: Record<string, string> = Object.fromEntries(
-  Object.entries(RADAR_SNEAKER_ID_MAP).map(([appId, dbId]) => [dbId, appId]),
-);

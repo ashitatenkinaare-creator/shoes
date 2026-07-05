@@ -5,7 +5,8 @@ describe("detectRareCollabFlags", () => {
   it("loads keyword definitions from config/rare-collab-keywords.json", async () => {
     const { rareCollabKeywordsConfig } = await import("@/lib/radar/kicksdb-sync");
     expect(rareCollabKeywordsConfig.rare.words).toContain("OG");
-    expect(rareCollabKeywordsConfig.collab.words).toContain("travis scott");
+    expect(rareCollabKeywordsConfig.collab.words).toContain("kith");
+    expect(rareCollabKeywordsConfig.collab.words).toContain("beams");
     expect(rareCollabKeywordsConfig.collab.regex).toContain("\\bx\\s+");
   });
 
@@ -26,6 +27,14 @@ describe("detectRareCollabFlags", () => {
       is_collab: true,
     });
     expect(detectRareCollabFlags("Dunk Low Off-White Pine Green", "Nike")).toEqual({
+      is_rare: false,
+      is_collab: true,
+    });
+    expect(detectRareCollabFlags("New Balance 990v3 KITH", "New Balance")).toEqual({
+      is_rare: false,
+      is_collab: true,
+    });
+    expect(detectRareCollabFlags("One Star Pro BEAMS", "Converse")).toEqual({
       is_rare: false,
       is_collab: true,
     });

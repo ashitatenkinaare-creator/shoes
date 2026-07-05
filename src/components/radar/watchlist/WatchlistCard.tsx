@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import RadarProductImage from "@/components/radar/RadarProductImage";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import WatchlistDeleteButton from "@/components/radar/watchlist/WatchlistDeleteButton";
 import {
@@ -25,7 +25,7 @@ export default function WatchlistCard({ item, onRemove }: WatchlistCardProps) {
           href={`/sneaker/${item.id}`}
           className="relative aspect-square w-full shrink-0 sm:w-32 md:w-36"
         >
-          <Image
+          <RadarProductImage
             src={item.imageUrl}
             alt={item.modelName}
             fill

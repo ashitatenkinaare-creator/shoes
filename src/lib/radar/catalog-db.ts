@@ -34,6 +34,7 @@ export async function fetchUpcomingSneakers(
   let query = supabase
     .from("radar_sneakers")
     .select("*")
+    .eq("source", "kicksdb")
     .gte("release_date", daysAgoIso(3))
     .lte("release_date", daysAheadIso(60))
     .order("release_date", { ascending: true })
@@ -68,6 +69,7 @@ export async function fetchSneakerDetailById(
   const { data, error } = await supabase
     .from("radar_sneakers")
     .select("*")
+    .eq("source", "kicksdb")
     .eq("id", dbId)
     .maybeSingle();
 
@@ -91,6 +93,7 @@ export async function countUpcomingSneakers(): Promise<number> {
   const { count, error } = await supabase
     .from("radar_sneakers")
     .select("*", { count: "exact", head: true })
+    .eq("source", "kicksdb")
     .gte("release_date", daysAgoIso(3))
     .lte("release_date", daysAheadIso(60));
 

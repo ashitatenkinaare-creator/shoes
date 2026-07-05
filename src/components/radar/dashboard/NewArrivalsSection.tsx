@@ -23,11 +23,17 @@ export default function NewArrivalsSection({ items }: NewArrivalsSectionProps) {
       </div>
 
       <ul className="space-y-4">
-        {items.map((item) => (
-          <li key={item.id}>
-            <SneakerPickCard item={item} />
+        {items.length === 0 ? (
+          <li className="rounded-2xl border border-dashed border-radar-border px-4 py-10 text-center text-sm text-slate-500">
+            条件に合う新作はまだありません。KicksDB 同期後に表示されます。
           </li>
-        ))}
+        ) : (
+          items.map((item) => (
+            <li key={item.id}>
+              <SneakerPickCard item={item} />
+            </li>
+          ))
+        )}
       </ul>
     </section>
   );

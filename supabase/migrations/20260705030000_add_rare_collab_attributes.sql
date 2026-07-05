@@ -18,22 +18,6 @@ create index if not exists radar_sneakers_is_collab_idx
   on public.radar_sneakers (is_collab)
   where is_collab = true;
 
--- シードデータの代表例を更新（UI デモ用）
-update public.radar_sneakers
-set is_rare = true, is_collab = false
-where id = '11111111-1111-4111-8111-111111110001'; -- Chicago Reimagined
-
-update public.radar_sneakers
-set is_rare = true, is_collab = false
-where id = '11111111-1111-4111-8111-111111110002'; -- AM1 OG Big Bubble
-
-update public.radar_sneakers
-set is_rare = false, is_collab = false
-where id in (
-  '11111111-1111-4111-8111-111111110003',
-  '11111111-1111-4111-8111-111111110004'
-);
-
 -- ---------------------------------------------------------------------------
 -- user_preferences: ダッシュボード絞り込み条件
 -- ---------------------------------------------------------------------------
