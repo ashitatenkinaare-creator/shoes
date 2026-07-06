@@ -6,9 +6,7 @@ function formatError(error: PostgrestError, context: string): string {
   return `${context}: ${error.message}`;
 }
 
-export async function createSneaker(
-  input: CreateSneakerInput,
-): Promise<SneakerResult> {
+export async function createSneaker(input: CreateSneakerInput): Promise<SneakerResult> {
   const { data, error } = await getSupabase()
     .from("sneakers")
     .insert({

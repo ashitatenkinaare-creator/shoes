@@ -19,36 +19,34 @@ interface DashboardViewProps {
 }
 
 export default function DashboardView({ items, initialPreferences = null }: DashboardViewProps) {
-  const { user } = useAuthSession();
+  const { user, loading: authLoading } = useAuthSession();
   const [notifyOpen, setNotifyOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [preferences, setPreferences] = useState<UserPreferences>(
-    initialPreferences ?? MOCK_PREFERENCES,
-  );
+  const preferences = useMemo((): UserPreferences => {
+    if (user && initialPreferences) return initialPreferences;
+    if (!user && !authLoading) return loadLocalPreferences();
+    return initialPreferences ?? MOCK_PREFERENCES;
+  }, [user, initialPreferences, authLoading]);
 
   useEffect(() => {
-    if (user) {
-      if (initialPreferences) {
-        setPreferences(initialPreferences);
-      }
-      return;
-    }
-    setPreferences(loadLocalPreferences());
-  }, [user, initialPreferences]);
+    if (!user) return;
 
-  useEffect(() => {
-    if (!user) {
-      setUnreadCount(0);
-      return;
-    }
+    let cancelled = false;
 
     const loadUnread = async () => {
       const { data } = await fetchNotifications(user.id);
+      if (cancelled) return;
       setUnreadCount((data ?? []).filter((n) => !n.readAt).length);
     };
 
     void loadUnread();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user, notifyOpen]);
+
+  const displayUnreadCount = user ? unreadCount : 0;
 
   const displayItems = useMemo(
     () => filterSneakersByPreferences(items, preferences),
@@ -81,7 +79,7 @@ export default function DashboardView({ items, initialPreferences = null }: Dash
       </header>
 
       <section className="rounded-2xl border border-radar-border bg-gradient-to-br from-radar-surface to-radar-muted p-5">
-        <p className="text-sm text-slate-400">本日のピックアップ</p>
+        <p className="text-sm text-slate-400">公式掲載・新作ピックアップ</p>
         <p className="mt-1 text-2xl font-black text-white">
           {displayItems.length}
           <span className="ml-1 text-base font-bold text-slate-400">件の新作</span>
@@ -89,6 +87,14 @@ export default function DashboardView({ items, initialPreferences = null }: Dash
         {activeFilters.length > 0 && (
           <p className="mt-2 text-xs text-radar-accent">
             フィルタ: {activeFilters.join(" / ")} のみ表示中
+          </p>
+        )}
+        {items.length > 0 && displayItems.length === 0 && (
+          <p className="mt-2 text-xs text-amber-400/90">
+            カタログに {items.length} 件の新作がありますが、現在の通知条件に一致するものがありません。
+            <Link href="/settings" className="ml-1 underline hover:text-amber-300">
+              条件を見直す
+            </Link>
           </p>
         )}
         <p className="mt-3 text-xs leading-relaxed text-slate-500">
@@ -110,9 +116,9 @@ export default function DashboardView({ items, initialPreferences = null }: Dash
           >
             <Bell className="h-4 w-4 text-radar-accent" aria-hidden="true" />
             通知を確認
-            {unreadCount > 0 && (
+            {displayUnreadCount > 0 && (
               <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-radar-accent px-1 text-[10px] font-bold text-radar-bg">
-                {unreadCount}
+                {displayUnreadCount}
               </span>
             )}
           </button>

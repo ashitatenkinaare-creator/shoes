@@ -484,56 +484,56 @@
 
 ### A. テスト実施に必要な環境前提
 
-| 項目 | 内容 |
-|---|---|
-| アプリ起動 | `npm run dev` で `http://localhost:5173` が起動していること |
-| 環境変数 | `.env` に `VITE_SUPABASE_URL` と `VITE_SUPABASE_ANON_KEY` が設定済み |
-| Supabase | `shose` プロジェクトの `sneakers` テーブルが作成済み |
-| RLS | 現状 RLS 無効（anon キーで CRUD 可能） |
-| テスト実行 | `npm run test:e2e`（Playwright）。`playwright.config.js` の `baseURL` は `http://localhost:5173` |
+| 項目                 | 内容                                                                                               |
+| -------------------- | -------------------------------------------------------------------------------------------------- |
+| アプリ起動           | `npm run dev` で `http://localhost:5173` が起動していること                                        |
+| 環境変数             | `.env` に `VITE_SUPABASE_URL` と `VITE_SUPABASE_ANON_KEY` が設定済み                               |
+| Supabase             | `shose` プロジェクトの `sneakers` テーブルが作成済み                                               |
+| RLS                  | 現状 RLS 無効（anon キーで CRUD 可能）                                                             |
+| テスト実行           | `npm run test:e2e`（Playwright）。`playwright.config.js` の `baseURL` は `http://localhost:5173`   |
 | データクリーンアップ | 各テスト前後に `sneakers` テーブルを空にする、または `E2E-` プレフィックス付きテストデータのみ使用 |
-| 確認ダイアログ | Playwright の `page.on('dialog', ...)` で OK / Cancel を制御 |
-| DB確認 | Supabase Dashboard の Table Editor、または Supabase MCP / REST API |
+| 確認ダイアログ       | Playwright の `page.on('dialog', ...)` で OK / Cancel を制御                                       |
+| DB確認               | Supabase Dashboard の Table Editor、または Supabase MCP / REST API                                 |
 
 ---
 
 ### B. よく使うセレクタ（Playwright）
 
-| 要素 | セレクタ例 |
-|---|---|
-| モデル名入力 | `#model_name` |
-| ブランド選択 | `#brand` |
-| 発売日入力 | `#release_date` |
-| 価格入力 | `#price` |
-| 画像URL入力 | `#image_url` |
-| 登録ボタン | `button[type="submit"]:has-text("スニーカーを登録")` |
-| 登録成功メッセージ | `text=スニーカーを登録しました` |
-| バリデーションエラー（モデル名） | `text=モデル名を入力してください` |
-| バリデーションエラー（発売日） | `text=発売日を入力してください` |
-| バリデーションエラー（価格） | `text=価格は正の整数で入力してください` |
-| 発売日カレンダー見出し | `#calendar >> text=発売日カレンダー` |
-| 件数表示 | `text=/データベースの発売日順に表示しています（\\d+件）/` |
-| 空状態メッセージ | `text=登録されたスニーカーがありません` |
-| 読み込み中 | `text=読み込み中...` |
-| スニーカーカード | `article`（カレンダー内） |
-| カード内モデル名 | `article h3` |
-| 通知ボタン（未設定） | `article button:has-text("通知設定")` |
-| 通知ボタン（設定済み） | `article button:has-text("通知設定済み")` |
-| 削除ボタン | `article button:has-text("削除")` |
-| ヒーロー注目モデル | `text=/注目の新作：/` |
+| 要素                             | セレクタ例                                                |
+| -------------------------------- | --------------------------------------------------------- |
+| モデル名入力                     | `#model_name`                                             |
+| ブランド選択                     | `#brand`                                                  |
+| 発売日入力                       | `#release_date`                                           |
+| 価格入力                         | `#price`                                                  |
+| 画像URL入力                      | `#image_url`                                              |
+| 登録ボタン                       | `button[type="submit"]:has-text("スニーカーを登録")`      |
+| 登録成功メッセージ               | `text=スニーカーを登録しました`                           |
+| バリデーションエラー（モデル名） | `text=モデル名を入力してください`                         |
+| バリデーションエラー（発売日）   | `text=発売日を入力してください`                           |
+| バリデーションエラー（価格）     | `text=価格は正の整数で入力してください`                   |
+| 発売日カレンダー見出し           | `#calendar >> text=発売日カレンダー`                      |
+| 件数表示                         | `text=/データベースの発売日順に表示しています（\\d+件）/` |
+| 空状態メッセージ                 | `text=登録されたスニーカーがありません`                   |
+| 読み込み中                       | `text=読み込み中...`                                      |
+| スニーカーカード                 | `article`（カレンダー内）                                 |
+| カード内モデル名                 | `article h3`                                              |
+| 通知ボタン（未設定）             | `article button:has-text("通知設定")`                     |
+| 通知ボタン（設定済み）           | `article button:has-text("通知設定済み")`                 |
+| 削除ボタン                       | `article button:has-text("削除")`                         |
+| ヒーロー注目モデル               | `text=/注目の新作：/`                                     |
 
 **カードをモデル名で特定する例:**
 
 ```javascript
-const card = page.locator('article').filter({ hasText: 'E2E-Air Jordan 1' });
-await card.getByRole('button', { name: '通知設定' }).click();
+const card = page.locator("article").filter({ hasText: "E2E-Air Jordan 1" });
+await card.getByRole("button", { name: "通知設定" }).click();
 ```
 
 **確認ダイアログのハンドリング例:**
 
 ```javascript
-page.once('dialog', async (dialog) => {
-  expect(dialog.message()).toContain('を削除しますか？');
+page.once("dialog", async (dialog) => {
+  expect(dialog.message()).toContain("を削除しますか？");
   await dialog.accept(); // または dialog.dismiss() でキャンセル
 });
 ```
@@ -568,22 +568,22 @@ page.once('dialog', async (dialog) => {
 
 #### 発売日順テスト用（3件）
 
-| model_name | brand | release_date | price |
-|---|---|---|---|
-| E2E-Early Release | Nike | 2026-07-01 | 15000 |
-| E2E-Mid Release | Adidas | 2026-08-15 | 18000 |
-| E2E-Late Release | New Balance | 2026-09-30 | 22000 |
+| model_name        | brand       | release_date | price |
+| ----------------- | ----------- | ------------ | ----- |
+| E2E-Early Release | Nike        | 2026-07-01   | 15000 |
+| E2E-Mid Release   | Adidas      | 2026-08-15   | 18000 |
+| E2E-Late Release  | New Balance | 2026-09-30   | 22000 |
 
 #### バリデーションエラー確認用
 
-| ケース | model_name | release_date | price | 期待エラー |
-|---|---|---|---|---|
-| モデル名空 | （空） | 2026-07-01 | 24200 | モデル名を入力してください |
-| 発売日空 | E2E-Test | （空） | 24200 | 発売日を入力してください |
-| 価格空 | E2E-Test | 2026-07-01 | （空） | 価格は正の整数で入力してください |
-| 価格0 | E2E-Test | 2026-07-01 | 0 | 価格は正の整数で入力してください |
-| 価格負数 | E2E-Test | 2026-07-01 | -100 | 価格は正の整数で入力してください |
-| 価格小数 | E2E-Test | 2026-07-01 | 24200.5 | 価格は正の整数で入力してください |
+| ケース     | model_name | release_date | price   | 期待エラー                       |
+| ---------- | ---------- | ------------ | ------- | -------------------------------- |
+| モデル名空 | （空）     | 2026-07-01   | 24200   | モデル名を入力してください       |
+| 発売日空   | E2E-Test   | （空）       | 24200   | 発売日を入力してください         |
+| 価格空     | E2E-Test   | 2026-07-01   | （空）  | 価格は正の整数で入力してください |
+| 価格0      | E2E-Test   | 2026-07-01   | 0       | 価格は正の整数で入力してください |
+| 価格負数   | E2E-Test   | 2026-07-01   | -100    | 価格は正の整数で入力してください |
+| 価格小数   | E2E-Test   | 2026-07-01   | 24200.5 | 価格は正の整数で入力してください |
 
 #### DBクリーンアップ用 SQL
 
@@ -597,11 +597,11 @@ DELETE FROM public.sneakers WHERE model_name LIKE 'E2E-%';
 
 ## テストケース一覧（サマリー）
 
-| 機能 | ID | 件数 |
-|---|---|---|
-| 新規登録 | REG-01 〜 REG-12 | 12 |
-| 一覧表示 | LIST-01 〜 LIST-10 | 10 |
-| 通知切替 | NOTIFY-01 〜 NOTIFY-07 | 7 |
-| 削除 | DEL-01 〜 DEL-07 | 7 |
-| 横断シナリオ | E2E-01 〜 E2E-03 | 3 |
-| **合計** | | **39** |
+| 機能         | ID                     | 件数   |
+| ------------ | ---------------------- | ------ |
+| 新規登録     | REG-01 〜 REG-12       | 12     |
+| 一覧表示     | LIST-01 〜 LIST-10     | 10     |
+| 通知切替     | NOTIFY-01 〜 NOTIFY-07 | 7      |
+| 削除         | DEL-01 〜 DEL-07       | 7      |
+| 横断シナリオ | E2E-01 〜 E2E-03       | 3      |
+| **合計**     |                        | **39** |

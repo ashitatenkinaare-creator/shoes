@@ -1,8 +1,14 @@
 import {
   fetchUpcomingStockxProducts,
   syncRadarReleases,
+  KICKSDB_SYNC_BRANDS,
+  mergeUniqueKicksDbProducts,
+  buildReleaseDateFilter,
 } from "../../../supabase/functions/_shared/sync-radar-releases";
-import { mapKicksDbProductToRow, detectRareCollabFlags } from "../../../supabase/functions/_shared/kicksdb-map";
+import {
+  mapKicksDbProductToRow,
+  detectRareCollabFlags,
+} from "../../../supabase/functions/_shared/kicksdb-map";
 import type {
   KicksDbStockxProduct,
   SyncRadarOptions,
@@ -11,7 +17,15 @@ import type {
 
 export type { KicksDbStockxProduct, SyncRadarOptions, SyncRadarResult };
 
-export { fetchUpcomingStockxProducts, mapKicksDbProductToRow, syncRadarReleases, detectRareCollabFlags };
+export {
+  fetchUpcomingStockxProducts,
+  mapKicksDbProductToRow,
+  syncRadarReleases,
+  detectRareCollabFlags,
+  KICKSDB_SYNC_BRANDS,
+  mergeUniqueKicksDbProducts,
+  buildReleaseDateFilter,
+};
 export {
   rareCollabKeywordsConfig,
   loadRareCollabKeywordPatterns,
@@ -23,6 +37,7 @@ export function buildSyncOptions(apiKey: string): SyncRadarOptions {
     daysAhead: Number(process.env.KICKSDB_SYNC_DAYS_AHEAD ?? 30),
     daysBehind: Number(process.env.KICKSDB_SYNC_DAYS_BEHIND ?? 3),
     limit: Number(process.env.KICKSDB_SYNC_LIMIT ?? 20),
+    perBrandLimit: Number(process.env.KICKSDB_SYNC_PER_BRAND_LIMIT ?? 10),
     usdJpy: Number(process.env.KICKSDB_USD_JPY ?? 150),
     announceOffsetDays: Number(process.env.KICKSDB_ANNOUNCE_OFFSET_DAYS ?? 14),
   };

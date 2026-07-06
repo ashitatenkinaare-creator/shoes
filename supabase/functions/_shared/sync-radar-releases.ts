@@ -10,11 +10,23 @@ import type {
 
 const KICKSDB_BASE = "https://api.kicks.dev/v3/stockx/products";
 
+/** KicksDB 同期で query= 取得するブランド（設定画面の AVAILABLE_BRANDS と揃える） */
+export const KICKSDB_SYNC_BRANDS = [
+  "Nike",
+  "Jordan",
+  "Adidas",
+  "New Balance",
+  "Converse",
+  "Asics",
+  "Puma",
+  "Yeezy",
+] as const;
+
 function formatIsoDate(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
 
-function buildReleaseDateFilter(daysBehind: number, daysAhead: number): string {
+export function buildReleaseDateFilter(daysBehind: number, daysAhead: number): string {
   const today = new Date();
   const start = new Date(today);
   start.setDate(start.getDate() - daysBehind);
@@ -27,18 +39,35 @@ function buildReleaseDateFilter(daysBehind: number, daysAhead: number): string {
   return `release_date >= "${startStr}" AND release_date <= "${endStr}" AND product_type = "sneakers"`;
 }
 
-export async function fetchUpcomingStockxProducts(
-  options: SyncRadarOptions,
-): Promise<{ products: KicksDbStockxProduct[]; error: string | null }> {
-  const daysAhead = options.daysAhead ?? 30;
-  const daysBehind = options.daysBehind ?? 3;
-  const limit = options.limit ?? 20;
+function productSlug(product: KicksDbStockxProduct): string | null {
+  const slug = product.slug?.trim();
+  return slug || null;
+}
 
-  const params = new URLSearchParams({
-    filters: 'product_type = "sneakers"',
-    sort: "rank",
-    limit: String(limit),
-  });
+/** slug 単位で重複排除（先勝ち） */
+export function mergeUniqueKicksDbProducts(
+  ...lists: KicksDbStockxProduct[][]
+): KicksDbStockxProduct[] {
+  const seen = new Set<string>();
+  const merged: KicksDbStockxProduct[] = [];
+
+  for (const list of lists) {
+    for (const product of list) {
+      const slug = productSlug(product);
+      if (!slug || seen.has(slug)) continue;
+      seen.add(slug);
+      merged.push(product);
+    }
+  }
+
+  return merged;
+}
+
+async function fetchStockxProductsPage(
+  options: SyncRadarOptions,
+  queryParams: Record<string, string>,
+): Promise<{ products: KicksDbStockxProduct[]; error: string | null }> {
+  const params = new URLSearchParams(queryParams);
 
   try {
     const response = await fetch(`${KICKSDB_BASE}?${params.toString()}`, {
@@ -64,6 +93,45 @@ export async function fetchUpcomingStockxProducts(
   }
 }
 
+export async function fetchUpcomingStockxProducts(
+  options: SyncRadarOptions,
+): Promise<{ products: KicksDbStockxProduct[]; error: string | null }> {
+  const daysAhead = options.daysAhead ?? 30;
+  const daysBehind = options.daysBehind ?? 3;
+  const limit = options.limit ?? 20;
+  const perBrandLimit = options.perBrandLimit ?? 10;
+  const brandQueries = options.brandQueries ?? KICKSDB_SYNC_BRANDS;
+
+  const errors: string[] = [];
+
+  const byReleaseDate = await fetchStockxProductsPage(options, {
+    filters: buildReleaseDateFilter(daysBehind, daysAhead),
+    sort: "release_date",
+    limit: String(limit),
+  });
+  if (byReleaseDate.error) errors.push(byReleaseDate.error);
+
+  const brandLists = await Promise.all(
+    brandQueries.map(async (brand) => {
+      const result = await fetchStockxProductsPage(options, {
+        query: brand,
+        filters: 'product_type = "sneakers"',
+        sort: "rank",
+        limit: String(perBrandLimit),
+      });
+      if (result.error) errors.push(`${brand}: ${result.error}`);
+      return result.products;
+    }),
+  );
+
+  const products = mergeUniqueKicksDbProducts(byReleaseDate.products, ...brandLists);
+
+  return {
+    products,
+    error: errors.length > 0 ? errors.join("; ") : null,
+  };
+}
+
 export async function syncRadarReleases(
   supabase: SupabaseClient,
   options: SyncRadarOptions,
@@ -78,7 +146,6 @@ export async function syncRadarReleases(
   const { products, error } = await fetchUpcomingStockxProducts(options);
   if (error) {
     result.errors.push(error);
-    return result;
   }
 
   result.fetched = products.length;

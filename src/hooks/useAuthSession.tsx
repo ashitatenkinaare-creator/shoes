@@ -64,22 +64,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return error ? mapAuthError(error.message) : null;
   }, []);
 
-  const signUp = useCallback(async (email: string, password: string, redirectPath = "/settings") => {
-    const redirectTo =
-      typeof window !== "undefined"
-        ? `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectPath)}`
-        : undefined;
+  const signUp = useCallback(
+    async (email: string, password: string, redirectPath = "/settings") => {
+      const redirectTo =
+        typeof window !== "undefined"
+          ? `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectPath)}`
+          : undefined;
 
-    const { data, error } = await getSupabase().auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: redirectTo },
-    });
-    if (error) {
-      return { error: mapAuthError(error.message), needsEmailConfirmation: false };
-    }
-    return { error: null, needsEmailConfirmation: !data.session };
-  }, []);
+      const { data, error } = await getSupabase().auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: redirectTo },
+      });
+      if (error) {
+        return { error: mapAuthError(error.message), needsEmailConfirmation: false };
+      }
+      return { error: null, needsEmailConfirmation: !data.session };
+    },
+    [],
+  );
 
   const signOut = useCallback(async () => {
     await getSupabase().auth.signOut();

@@ -1,10 +1,11 @@
 "use client";
 
-import { Suspense, useEffect, useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { LogIn, Radar, UserPlus } from "lucide-react";
 import { sanitizeRedirectPath } from "@/lib/radar/auth-routes";
+import { DEMO_ACCOUNT } from "@/data/demo-account";
 import { useAuthSession } from "@/hooks/useAuthSession";
 
 type AuthMode = "login" | "register";
@@ -22,10 +23,8 @@ function AuthFormInner() {
   const [info, setInfo] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    const queryError = searchParams?.get("error");
-    if (queryError) setError(queryError);
-  }, [searchParams]);
+  const queryError = searchParams?.get("error");
+  const displayError = error ?? queryError;
 
   const switchMode = (next: AuthMode) => {
     setMode(next);
@@ -128,9 +127,7 @@ function AuthFormInner() {
             aria-selected={mode === "login"}
             onClick={() => switchMode("login")}
             className={`btn-press flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-colors ${
-              mode === "login"
-                ? "bg-radar-accent text-radar-bg"
-                : "text-slate-400 hover:text-white"
+              mode === "login" ? "bg-radar-accent text-radar-bg" : "text-slate-400 hover:text-white"
             }`}
           >
             <LogIn className="h-4 w-4" aria-hidden="true" />
@@ -152,6 +149,30 @@ function AuthFormInner() {
           </button>
         </div>
 
+        <div className="mt-4 rounded-xl border border-radar-accent/30 bg-radar-accent/5 p-4">
+          <p className="text-xs font-bold text-radar-accent">評価用デモアカウント</p>
+          <p className="mt-1 text-xs leading-relaxed text-slate-400">
+            全機能（条件設定・ウォッチリスト・2段階通知）を確認できます。
+            <br />
+            メール: <span className="text-slate-200">{DEMO_ACCOUNT.email}</span>
+            <br />
+            パスワード: <span className="text-slate-200">{DEMO_ACCOUNT.password}</span>
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setMode("login");
+              setEmail(DEMO_ACCOUNT.email);
+              setPassword(DEMO_ACCOUNT.password);
+              setError(null);
+              setInfo(null);
+            }}
+            className="mt-3 text-xs font-semibold text-radar-accent hover:underline"
+          >
+            デモアカウントを入力する
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
             <label htmlFor="auth-email" className="mb-1.5 block text-xs font-bold text-slate-400">
@@ -169,7 +190,10 @@ function AuthFormInner() {
           </div>
 
           <div>
-            <label htmlFor="auth-password" className="mb-1.5 block text-xs font-bold text-slate-400">
+            <label
+              htmlFor="auth-password"
+              className="mb-1.5 block text-xs font-bold text-slate-400"
+            >
               パスワード
             </label>
             <input
@@ -212,12 +236,12 @@ function AuthFormInner() {
             </p>
           )}
 
-          {error && (
+          {displayError && (
             <p
               role="alert"
               className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400"
             >
-              {error}
+              {displayError}
             </p>
           )}
 
@@ -226,11 +250,7 @@ function AuthFormInner() {
             disabled={submitting}
             className="btn-press min-h-[48px] w-full rounded-xl bg-radar-accent py-3 text-sm font-bold text-radar-bg transition-colors hover:bg-radar-accent-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {submitting
-              ? "処理中..."
-              : mode === "login"
-                ? "ログイン"
-                : "アカウントを作成"}
+            {submitting ? "処理中..." : mode === "login" ? "ログイン" : "アカウントを作成"}
           </button>
         </form>
 

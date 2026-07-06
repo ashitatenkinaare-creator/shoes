@@ -2,14 +2,10 @@
 
 import Link from "next/link";
 import RadarProductImage from "@/components/radar/RadarProductImage";
+import { resolveOfficialLink } from "@/lib/radar/sneaker-links";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import WatchlistDeleteButton from "@/components/radar/watchlist/WatchlistDeleteButton";
-import {
-  formatDateJa,
-  formatYen,
-  getPhaseLabel,
-  getPhaseStyle,
-} from "@/lib/radar/format";
+import { formatDateJa, formatYen, getPhaseLabel, getPhaseStyle } from "@/lib/radar/format";
 import type { SneakerRadarItem, WatchlistRemoveHandler } from "@/types/radar";
 
 interface WatchlistCardProps {
@@ -18,6 +14,13 @@ interface WatchlistCardProps {
 }
 
 export default function WatchlistCard({ item, onRemove }: WatchlistCardProps) {
+  const officialLink = resolveOfficialLink({
+    newsUrl: item.newsUrl,
+    lotteryUrl: item.lotteryUrl,
+    brand: item.brand,
+    modelName: item.modelName,
+  });
+
   return (
     <article className="group overflow-hidden rounded-2xl border border-radar-border bg-radar-surface transition-colors hover:border-radar-accent/40">
       <div className="flex flex-col sm:flex-row">
@@ -78,7 +81,9 @@ export default function WatchlistCard({ item, onRemove }: WatchlistCardProps) {
           <dl className="mt-4 grid grid-cols-2 gap-3 rounded-xl bg-radar-muted/50 p-3 text-xs">
             <div>
               <dt className="text-slate-500">発表日</dt>
-              <dd className="mt-0.5 font-medium text-slate-200">{formatDateJa(item.announceDate)}</dd>
+              <dd className="mt-0.5 font-medium text-slate-200">
+                {formatDateJa(item.announceDate)}
+              </dd>
             </div>
             <div>
               <dt className="text-slate-500">発売日</dt>
@@ -96,15 +101,17 @@ export default function WatchlistCard({ item, onRemove }: WatchlistCardProps) {
                 詳細
                 <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
-              <a
-                href={item.storeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 rounded-lg border border-radar-border px-3 py-1.5 text-xs font-semibold text-slate-400 transition-colors hover:border-slate-500 hover:text-white"
-              >
-                ストア
-                <ExternalLink className="h-3 w-3" aria-hidden="true" />
-              </a>
+              {officialLink && (
+                <a
+                  href={officialLink.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 rounded-lg border border-radar-border px-3 py-1.5 text-xs font-semibold text-slate-400 transition-colors hover:border-radar-accent/50 hover:text-radar-accent"
+                >
+                  {officialLink.label}
+                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                </a>
+              )}
             </div>
           </div>
         </div>

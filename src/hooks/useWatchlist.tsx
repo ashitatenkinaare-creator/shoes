@@ -15,11 +15,7 @@ import {
   fetchUserWatchlist,
   removeWatchlistItem,
 } from "@/lib/radar/watchlist-db";
-import {
-  fetchWatchlistItems,
-  loadWatchlistIds,
-  saveWatchlistIds,
-} from "@/lib/radar/watchlist";
+import { fetchWatchlistItems, loadWatchlistIds, saveWatchlistIds } from "@/lib/radar/watchlist";
 import type { SneakerRadarItem } from "@/types/radar";
 
 type WatchlistStorageMode = "remote" | "local";

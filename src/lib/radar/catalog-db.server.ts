@@ -1,29 +1,31 @@
 import type { PostgrestError, SupabaseClient } from "@supabase/supabase-js";
-import {
-  rowToSneakerDetail,
-  rowToSneakerItem,
-  toDbSneakerId,
-} from "@/lib/radar/map-radar-sneaker";
+import { filterDashboardCatalogRows } from "@/lib/radar/catalog-dashboard-filter";
+import { rowToSneakerDetail, rowToSneakerItem, toDbSneakerId } from "@/lib/radar/map-radar-sneaker";
 import { createServerSupabase } from "@/lib/supabase/server";
 import type { SneakerCatalogFilters } from "@/lib/radar/filter-sneakers";
 import type { SneakerRadarDetail, SneakerRadarItem } from "@/types/radar";
 import type { RadarDbResult, RadarSneakerRow } from "@/types/radar-db";
 
+export type UpcomingSneakersOptions = {
+  /** dashboard: E2E 除外 + 公式 lottery_url 付きの新作 */
+  mode?: "default" | "dashboard";
+};
+
 function formatError(error: PostgrestError, context: string): string {
   return `${context}: ${error.message}`;
 }
 
-function daysAgoIso(days: number): string {
-  const date = new Date();
-  date.setDate(date.getDate() - days);
-  return date.toISOString().slice(0, 10);
+function todayIso(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
-function daysAheadIso(days: number): string {
-  const date = new Date();
-  date.setDate(date.getDate() + days);
-  return date.toISOString().slice(0, 10);
-}
+/** 品質フィルター前に十分な件数を取得（LIMIT が先頭の低品質行だけになるのを防ぐ） */
+const DASHBOARD_PREFILTER_MULTIPLIER = 10;
+const DASHBOARD_PREFILTER_MIN = 100;
 
 const CATALOG_SELECT_WITH_CATEGORY = "*, radar_categories(slug, label)";
 const CATALOG_SELECT_BASE = "*";
@@ -42,14 +44,20 @@ async function runCatalogQuery(
   select: string,
   filters?: SneakerCatalogFilters,
   limit?: number,
+  mode: UpcomingSneakersOptions["mode"] = "default",
 ): Promise<CatalogQueryResult> {
-  let query = supabase
-    .from("radar_sneakers")
-    .select(select)
-    .eq("source", "kicksdb")
-    .gte("release_date", daysAgoIso(540))
-    .lte("release_date", daysAheadIso(60))
-    .order("release_date", { ascending: true });
+  let query = supabase.from("radar_sneakers").select(select).gte("release_date", todayIso());
+
+  if (mode === "dashboard") {
+    query = query
+      .in("source", ["snkrs", "kicksdb"])
+      .not("external_id", "ilike", "e2e-%")
+      .not("lottery_url", "is", null);
+  } else {
+    query = query.eq("source", "kicksdb");
+  }
+
+  query = query.order("release_date", { ascending: true });
 
   if (typeof limit === "number") {
     query = query.limit(limit);
@@ -69,12 +77,19 @@ async function selectCatalogRows(
   supabase: SupabaseClient,
   filters?: SneakerCatalogFilters,
   limit?: number,
+  mode: UpcomingSneakersOptions["mode"] = "default",
 ): Promise<CatalogQueryResult> {
-  const withCategory = await runCatalogQuery(supabase, CATALOG_SELECT_WITH_CATEGORY, filters, limit);
+  const withCategory = await runCatalogQuery(
+    supabase,
+    CATALOG_SELECT_WITH_CATEGORY,
+    filters,
+    limit,
+    mode,
+  );
   if (!withCategory.error) return withCategory;
 
   if (isMissingCategoriesRelation(withCategory.error)) {
-    return runCatalogQuery(supabase, CATALOG_SELECT_BASE, filters, limit);
+    return runCatalogQuery(supabase, CATALOG_SELECT_BASE, filters, limit, mode);
   }
 
   return withCategory;
@@ -84,9 +99,15 @@ async function selectCatalogRows(
 export async function fetchUpcomingSneakers(
   limit = 20,
   filters?: SneakerCatalogFilters,
+  options?: UpcomingSneakersOptions,
 ): Promise<RadarDbResult<SneakerRadarItem[]>> {
+  const mode = options?.mode ?? "default";
   const supabase = await createServerSupabase();
-  const { data, error } = await selectCatalogRows(supabase, filters, limit);
+  const queryLimit =
+    mode === "dashboard"
+      ? Math.max(limit * DASHBOARD_PREFILTER_MULTIPLIER, DASHBOARD_PREFILTER_MIN)
+      : limit;
+  const { data, error } = await selectCatalogRows(supabase, filters, queryLimit, mode);
 
   if (error) {
     return {
@@ -95,7 +116,12 @@ export async function fetchUpcomingSneakers(
     };
   }
 
-  const rows = (data ?? []) as RadarSneakerRow[];
+  let rows = (data ?? []) as RadarSneakerRow[];
+  if (mode === "dashboard") {
+    // 発売日・画像・ソースURL の3基準: dashboard-catalog-quality.ts + filterDashboardCatalogRows
+    rows = filterDashboardCatalogRows(rows).slice(0, limit);
+  }
+
   return { data: rows.map(rowToSneakerItem), error: null };
 }
 
@@ -108,7 +134,7 @@ export async function fetchSneakerDetailById(
   const withCategory = await supabase
     .from("radar_sneakers")
     .select(CATALOG_SELECT_WITH_CATEGORY)
-    .eq("source", "kicksdb")
+    .in("source", ["kicksdb", "snkrs"])
     .eq("id", dbId)
     .maybeSingle();
 
@@ -118,7 +144,7 @@ export async function fetchSneakerDetailById(
     result = await supabase
       .from("radar_sneakers")
       .select(CATALOG_SELECT_BASE)
-      .eq("source", "kicksdb")
+      .in("source", ["kicksdb", "snkrs"])
       .eq("id", dbId)
       .maybeSingle();
   }
@@ -146,8 +172,7 @@ export async function countUpcomingSneakers(): Promise<number> {
     .from("radar_sneakers")
     .select("*", { count: "exact", head: true })
     .eq("source", "kicksdb")
-    .gte("release_date", daysAgoIso(540))
-    .lte("release_date", daysAheadIso(60));
+    .gte("release_date", todayIso());
 
   if (error) return 0;
   return count ?? 0;

@@ -14,17 +14,12 @@ async function selectSneakersByIds(dbIds: string[]) {
   const withCategory = await supabase
     .from("radar_sneakers")
     .select(CATALOG_SELECT_WITH_CATEGORY)
-    .eq("source", "kicksdb")
     .in("id", dbIds);
 
   if (!withCategory.error) return withCategory;
 
   if (withCategory.error.message.includes("radar_categories")) {
-    return supabase
-      .from("radar_sneakers")
-      .select(CATALOG_SELECT_BASE)
-      .eq("source", "kicksdb")
-      .in("id", dbIds);
+    return supabase.from("radar_sneakers").select(CATALOG_SELECT_BASE).in("id", dbIds);
   }
 
   return withCategory;

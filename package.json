@@ -8,16 +8,26 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "test": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "seed:demo": "node scripts/seed-demo.mjs",
+    "seed:demo-data": "node scripts/seed-e2e-radar-data.mjs",
+    "seed:demo-account": "node scripts/seed-demo-account.mjs",
+    "sync:official-urls": "tsx scripts/sync-official-urls.mjs",
+    "sync:kicksdb": "node scripts/run-radar-sync.mjs",
+    "verify:ai-setup": "node scripts/verify-ai-setup.mjs"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.110.0",
     "lucide-react": "^1.23.0",
     "next": "16.2.10",
     "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react-dom": "19.2.7",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",
@@ -25,8 +35,11 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.4",
     "tailwindcss": "^4",
     "tsx": "^4.23.0",
     "typescript": "^5",

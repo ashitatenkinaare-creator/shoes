@@ -4,7 +4,8 @@ import { syncRadarReleases } from "../_shared/sync-radar-releases.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
 function isAuthorized(req: Request): boolean {

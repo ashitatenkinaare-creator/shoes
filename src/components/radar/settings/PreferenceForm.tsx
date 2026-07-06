@@ -1,17 +1,10 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
-import { Check, Cloud, Megaphone, Rocket, Sparkles, Users } from "lucide-react";
+import { Check, Cloud, Megaphone, Sparkles, Ticket, Users } from "lucide-react";
 import SelectChipGroup from "@/components/radar/settings/SelectChipGroup";
-import {
-  AVAILABLE_BRANDS,
-  AVAILABLE_SIZES,
-  MOCK_PREFERENCES,
-} from "@/data/radar-mock";
-import {
-  AVAILABLE_COLLAB_BRANDS,
-  AVAILABLE_SILHOUETTES,
-} from "@/lib/radar/silhouette-keywords";
+import { AVAILABLE_BRANDS, AVAILABLE_SIZES, MOCK_PREFERENCES } from "@/data/radar-mock";
+import { AVAILABLE_COLLAB_BRANDS, AVAILABLE_SILHOUETTES } from "@/lib/radar/silhouette-keywords";
 import { fetchActiveCategoriesClient } from "@/lib/radar/categories-db";
 import type { RadarCategory } from "@/lib/radar/categories";
 import { useAuthSession } from "@/hooks/useAuthSession";
@@ -85,28 +78,36 @@ export default function PreferenceForm() {
   useEffect(() => {
     if (authLoading) return;
 
-    if (!user) {
-      setPreferences(loadLocalPreferences());
-      setLoading(false);
-      return;
-    }
+    let cancelled = false;
 
     const load = async () => {
+      if (!user) {
+        setPreferences(loadLocalPreferences());
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       setError(null);
 
       try {
         const { preferences: remote } = await loadPreferencesForUser(user.id);
+        if (cancelled) return;
         setPreferences(remote);
       } catch (err) {
+        if (cancelled) return;
         setError(err instanceof Error ? err.message : "条件設定の読み込みに失敗しました");
         setPreferences(loadLocalPreferences());
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     void load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [authLoading, user]);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -243,12 +244,12 @@ export default function PreferenceForm() {
         <div>
           <h2 className="text-sm font-bold text-white">2段階通知</h2>
           <p className="mt-1 text-xs text-slate-500">
-            発表時と発売当日のどちらで通知を受け取るか選べます
+            1〜2ヶ月先のコラボ発表（第1弾）と、あとから公開される公式の購入・抽選ページ開設（第2弾）を、それぞれ別タイミングでお知らせします。サイトを毎日チェックする必要はありません。
           </p>
         </div>
         <NotificationToggle
-          label="新作発表通知"
-          description="モデル発表・情報解禁のタイミングでプッシュ通知"
+          label="公式の新作発表・解禁ニュース（第1弾）"
+          description="公式ニュースが解禁されたタイミングで通知。まだ購入ページは無く、発表・特設ニュースの URL へ誘導します"
           icon={Megaphone}
           checked={preferences.notifyOnAnnouncement}
           onChange={(notifyOnAnnouncement) =>
@@ -256,13 +257,11 @@ export default function PreferenceForm() {
           }
         />
         <NotificationToggle
-          label="発売当日通知"
-          description="抽選・発売開始の当日にプッシュ通知"
-          icon={Rocket}
+          label="公式の販売・抽選ページ開設の速報（第2弾）"
+          description="公式の抽選・購入エントリーページが完成した瞬間に通知。詳細画面のボタンも抽選 URL に自動切り替わります"
+          icon={Ticket}
           checked={preferences.notifyOnRelease}
-          onChange={(notifyOnRelease) =>
-            setPreferences((prev) => ({ ...prev, notifyOnRelease }))
-          }
+          onChange={(notifyOnRelease) => setPreferences((prev) => ({ ...prev, notifyOnRelease }))}
         />
       </section>
 

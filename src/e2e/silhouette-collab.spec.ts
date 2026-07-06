@@ -13,8 +13,14 @@ test.describe("Silhouette / Collab brand filters", () => {
     await page.reload();
     await expect(page.getByRole("button", { name: "条件を保存する" })).toBeVisible();
 
-    await page.getByRole("group", { name: "シルエット / モデル" }).getByRole("button", { name: "All Star" }).click();
-    await page.getByRole("group", { name: "コラボブランド" }).getByRole("button", { name: "KITH" }).click();
+    await page
+      .getByRole("group", { name: "シルエット / モデル" })
+      .getByRole("button", { name: "All Star" })
+      .click();
+    await page
+      .getByRole("group", { name: "コラボブランド" })
+      .getByRole("button", { name: "KITH" })
+      .click();
     await page.getByRole("button", { name: "条件を保存する" }).click();
     await expect(page.getByRole("status")).toContainText(/保存しました/);
 

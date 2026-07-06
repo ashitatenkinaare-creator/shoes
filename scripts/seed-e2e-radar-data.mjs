@@ -25,6 +25,10 @@ function offsetDate(days) {
   return date.toISOString().slice(0, 10);
 }
 
+function todayIso() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 loadEnvLocal();
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -41,6 +45,30 @@ const supabase = createClient(url, serviceRole, {
 
 const FIXTURES = [
   {
+    id: "22222222-2222-2222-2222-222222222201",
+    external_id: "snkrs-demo-air-jordan-1-high-og-love-letter",
+    brand: "Jordan",
+    model_name: "Air Jordan 1 High OG Love Letter",
+    release_offset: 7,
+    is_rare: true,
+    is_collab: false,
+    news_url: null,
+    lottery_url: "https://www.nike.com/jp/launch/t/air-jordan-1-high-og-love-letter",
+    lottery_opened_at: new Date().toISOString(),
+  },
+  {
+    id: "22222222-2222-2222-2222-222222222202",
+    external_id: "snkrs-demo-zoom-streak-3-black-and-white",
+    brand: "Nike",
+    model_name: "Zoom Streak 3 Black and White",
+    release_offset: 10,
+    is_rare: false,
+    is_collab: false,
+    news_url: null,
+    lottery_url: "https://www.nike.com/jp/launch/t/zoom-streak-3-black-and-white",
+    lottery_opened_at: null,
+  },
+  {
     id: "11111111-1111-1111-1111-111111111101",
     external_id: "e2e-nike-rare",
     brand: "Nike",
@@ -48,6 +76,9 @@ const FIXTURES = [
     release_offset: 14,
     is_rare: true,
     is_collab: false,
+    news_url: "https://www.nike.com/jp/launch/t/e2e-chicago-reimagined-demo",
+    lottery_url: null,
+    lottery_opened_at: null,
   },
   {
     id: "11111111-1111-1111-1111-111111111102",
@@ -57,6 +88,9 @@ const FIXTURES = [
     release_offset: 21,
     is_rare: true,
     is_collab: false,
+    news_url: "https://www.nike.com/jp/launch/t/e2e-black-cat-announce-demo",
+    lottery_url: "https://www.nike.com/jp/launch/t/black-cat-demo",
+    lottery_opened_at: new Date().toISOString(),
   },
   {
     id: "11111111-1111-1111-1111-111111111103",
@@ -66,6 +100,9 @@ const FIXTURES = [
     release_offset: 28,
     is_rare: false,
     is_collab: false,
+    news_url: "https://www.converse.com/launch",
+    lottery_url: null,
+    lottery_opened_at: null,
   },
   {
     id: "11111111-1111-1111-1111-111111111104",
@@ -75,11 +112,13 @@ const FIXTURES = [
     release_offset: 35,
     is_rare: false,
     is_collab: false,
+    news_url: null,
+    lottery_url: null,
+    lottery_opened_at: null,
   },
 ];
 
-const imageUrl =
-  "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop";
+const imageUrl = "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop";
 
 let categoryId = null;
 const { data: category } = await supabase
@@ -94,7 +133,7 @@ let upserted = 0;
 
 for (const fixture of FIXTURES) {
   const releaseDate = offsetDate(fixture.release_offset);
-  const announceDate = offsetDate(fixture.release_offset - 14);
+  const announceDate = fixture.news_url ? todayIso() : offsetDate(fixture.release_offset - 14);
   const row = {
     id: fixture.id,
     brand: fixture.brand,
@@ -104,9 +143,12 @@ for (const fixture of FIXTURES) {
     release_date: releaseDate,
     phase: "upcoming",
     price: 20000,
-    store_url: "https://stockx.com",
+    store_url: fixture.news_url ?? "https://www.nike.com/jp/launch",
+    news_url: fixture.news_url,
+    lottery_url: fixture.lottery_url,
+    lottery_opened_at: fixture.lottery_opened_at,
     description: "E2E fixture",
-    source: "kicksdb",
+    source: fixture.external_id.startsWith("snkrs-demo-") ? "snkrs" : "kicksdb",
     external_id: fixture.external_id,
     is_rare: fixture.is_rare,
     is_collab: fixture.is_collab,

@@ -8,7 +8,8 @@ function loadEnvLocal() {
     if (!trimmed || trimmed.startsWith("#")) continue;
     const idx = trimmed.indexOf("=");
     if (idx === -1) continue;
-    if (!process.env[trimmed.slice(0, idx)]) process.env[trimmed.slice(0, idx)] = trimmed.slice(idx + 1);
+    if (!process.env[trimmed.slice(0, idx)])
+      process.env[trimmed.slice(0, idx)] = trimmed.slice(idx + 1);
   }
 }
 
@@ -39,7 +40,9 @@ function resolveReleaseDate(product) {
   if (product.release_date && /^\d{4}-\d{2}-\d{2}/.test(String(product.release_date))) {
     return String(product.release_date).slice(0, 10);
   }
-  const dropped = (product.description ?? "").match(/(?:dropped|released)\s+on\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})/i);
+  const dropped = (product.description ?? "").match(
+    /(?:dropped|released)\s+on\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})/i,
+  );
   if (dropped?.[1]) {
     const parsed = new Date(dropped[1]);
     if (!Number.isNaN(parsed.getTime())) return formatIsoDate(parsed);
@@ -64,7 +67,9 @@ function mapProduct(product) {
     external_id: product.slug,
     brand: product.brand ?? "Unknown",
     model_name: product.title ?? product.slug,
-    image_url: product.image ?? "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop",
+    image_url:
+      product.image ??
+      "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop",
     announce_date: computeAnnounceDate(releaseDate),
     release_date: releaseDate,
     phase: computePhase(releaseDate),
@@ -77,11 +82,21 @@ function mapProduct(product) {
 }
 
 const apiKey = process.env.KICKSDB_API_KEY;
-const params = new URLSearchParams({ filters: 'product_type = "sneakers"', sort: "rank", limit: String(LIMIT) });
+const params = new URLSearchParams({
+  filters: 'product_type = "sneakers"',
+  sort: "rank",
+  limit: String(LIMIT),
+});
 const response = await fetch(`https://api.kicks.dev/v3/stockx/products?${params}`, {
   headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
 });
 const json = await response.json();
 const rows = (json.data ?? []).map(mapProduct).filter(Boolean);
 writeFileSync("scripts/.sync-rows.json", JSON.stringify(rows, null, 2));
-console.log(JSON.stringify({ fetched: json.data?.length ?? 0, mapped: rows.length, sample: rows[0]?.model_name }, null, 2));
+console.log(
+  JSON.stringify(
+    { fetched: json.data?.length ?? 0, mapped: rows.length, sample: rows[0]?.model_name },
+    null,
+    2,
+  ),
+);

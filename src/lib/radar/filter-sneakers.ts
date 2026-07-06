@@ -1,8 +1,10 @@
 import type { SneakerRadarItem, UserPreferences } from "@/types/radar";
-import {
-  matchesAnyCollabBrand,
-  matchesAnySilhouette,
-} from "@/lib/radar/silhouette-keywords";
+import { normalizeCatalogBrand } from "@/lib/radar/sneaker-links";
+import { matchesAnyCollabBrand, matchesAnySilhouette } from "@/lib/radar/silhouette-keywords";
+
+function brandMatchesPreference(itemBrand: string, preferenceBrand: string): boolean {
+  return normalizeCatalogBrand(itemBrand) === normalizeCatalogBrand(preferenceBrand);
+}
 
 /** ユーザー条件でカタログを絞り込む */
 export function filterSneakersByPreferences(
@@ -10,7 +12,10 @@ export function filterSneakersByPreferences(
   preferences: UserPreferences,
 ): SneakerRadarItem[] {
   return items.filter((item) => {
-    if (preferences.brands.length > 0 && !preferences.brands.includes(item.brand)) {
+    if (
+      preferences.brands.length > 0 &&
+      !preferences.brands.some((brand) => brandMatchesPreference(item.brand, brand))
+    ) {
       return false;
     }
     if (!matchesAnySilhouette(item.modelName, item.brand, preferences.silhouettes)) {
@@ -19,10 +24,7 @@ export function filterSneakersByPreferences(
     if (!matchesAnyCollabBrand(item.modelName, item.brand, preferences.collabBrands)) {
       return false;
     }
-    if (
-      preferences.categories.length > 0 &&
-      !preferences.categories.includes(item.categorySlug)
-    ) {
+    if (preferences.categories.length > 0 && !preferences.categories.includes(item.categorySlug)) {
       return false;
     }
     if (preferences.filterRare && !item.isRare) {

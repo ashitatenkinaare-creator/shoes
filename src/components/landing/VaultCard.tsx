@@ -43,7 +43,7 @@ export default function VaultCard({ item }: VaultCardProps) {
               : "border border-slate-600 text-white hover:border-white"
           }`}
         >
-          {item.status === "live" ? "Purchase" : "Details"}
+          {item.status === "live" ? "購入する" : "詳細を見る"}
         </Link>
       </div>
     </article>

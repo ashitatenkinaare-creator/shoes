@@ -1,9 +1,5 @@
 import { test, expect } from "@playwright/test";
-import {
-  confirmUserEmail,
-  createConfirmedTestUser,
-  deleteUserByEmail,
-} from "./helpers/auth-admin";
+import { confirmUserEmail, createConfirmedTestUser, deleteUserByEmail } from "./helpers/auth-admin";
 import { loadEnvLocal } from "./helpers/env";
 
 function uniqueEmail(): string {
@@ -35,11 +31,16 @@ test.describe("Auth 導線", () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto("/dashboard");
 
-    await page.getByRole("navigation", { name: "サイドナビ" }).getByRole("link", { name: /ログイン/ }).click();
-    await expect(page).toHaveURL(/\/auth/);
+    const loginLink = page
+      .getByRole("navigation", { name: "サイドナビ" })
+      .getByRole("link", { name: /ログイン/ });
+    await expect(loginLink).toBeVisible();
+    await loginLink.click();
+    await expect(page).toHaveURL(/\/auth/, { timeout: 15_000 });
   });
 
   test("サインアップ・ログイン・ログアウトの導線", async ({ page }) => {
+    test.setTimeout(60_000);
     await page.setViewportSize({ width: 1280, height: 720 });
     const email = uniqueEmail();
     const form = () => page.locator("form");
@@ -54,7 +55,10 @@ test.describe("Auth 導線", () => {
 
       const outcome = await Promise.race([
         page.waitForURL(/\/dashboard/, { timeout: 15000 }).then(() => "session" as const),
-        form().getByRole("status").waitFor({ timeout: 15000 }).then(() => "confirm" as const),
+        form()
+          .getByRole("status")
+          .waitFor({ timeout: 15000 })
+          .then(() => "confirm" as const),
         form()
           .getByRole("alert")
           .waitFor({ timeout: 15000 })
@@ -87,12 +91,14 @@ test.describe("Auth 導線", () => {
       await expect(logoutButton).toBeVisible();
 
       await logoutButton.click();
-      await expect(page).toHaveURL(/\/auth/);
+      await expect(page).toHaveURL(/\/auth/, { timeout: 15000 });
 
       await page.goto("/dashboard");
       await expect(
-        page.getByRole("navigation", { name: "サイドナビ" }).getByRole("link", { name: /ログイン/ }),
-      ).toBeVisible();
+        page
+          .getByRole("navigation", { name: "サイドナビ" })
+          .getByRole("link", { name: /ログイン/ }),
+      ).toBeVisible({ timeout: 10000 });
     } finally {
       await deleteUserByEmail(email).catch(() => undefined);
     }

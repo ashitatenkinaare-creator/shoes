@@ -10,23 +10,15 @@ interface SneakerItemProps {
   onDelete: (sneaker: Sneaker) => void;
 }
 
-export default function SneakerItem({
-  sneaker,
-  onToggleNotify,
-  onDelete,
-}: SneakerItemProps) {
+export default function SneakerItem({ sneaker, onToggleNotify, onDelete }: SneakerItemProps) {
   const notifyLabel = sneaker.isNotified ? "ON" : "OFF";
 
   return (
     <li className="rounded-2xl border border-border bg-surface p-3 shadow-lg shadow-black/20 transition-colors hover:border-indigo-500/30 md:p-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
         <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold text-slate-100 md:hidden">
-            {sneaker.modelName}
-          </p>
-          <p className="mt-0.5 truncate text-sm text-slate-400 md:hidden">
-            {sneaker.brand}
-          </p>
+          <p className="truncate font-semibold text-slate-100 md:hidden">{sneaker.modelName}</p>
+          <p className="mt-0.5 truncate text-sm text-slate-400 md:hidden">{sneaker.brand}</p>
 
           <p className="hidden truncate font-semibold text-slate-100 md:block">
             {sneaker.modelName}

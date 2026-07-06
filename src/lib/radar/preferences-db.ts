@@ -1,54 +1,68 @@
-import type { PostgrestError } from "@supabase/supabase-js";
-import { getSupabase } from "@/lib/supabase/client";
-import { rowToPreferences, preferencesToRow } from "@/lib/radar/map-preferences";
 import type { UserPreferences } from "@/types/radar";
-import type { RadarDbResult, UserPreferencesRow } from "@/types/radar-db";
+import type { RadarDbResult } from "@/types/radar-db";
 
-function formatError(error: PostgrestError, context: string): string {
-  return `${context}: ${error.message}`;
+function formatError(message: string, context: string): string {
+  return `${context}: ${message}`;
 }
 
+async function readApiError(response: Response, context: string): Promise<string> {
+  try {
+    const body = (await response.json()) as { error?: string };
+    if (body.error) return formatError(body.error, context);
+  } catch {
+    // ignore JSON parse errors
+  }
+  return formatError(`HTTP ${response.status}`, context);
+}
+
+/** ログインユーザーの条件設定を API 経由で取得（Cookie セッション → RLS 安全） */
 export async function fetchUserPreferences(
-  userId: string,
+  _userId: string,
 ): Promise<RadarDbResult<UserPreferences | null>> {
-  const { data, error } = await getSupabase()
-    .from("user_preferences")
-    .select("*")
-    .eq("user_id", userId)
-    .maybeSingle();
+  const response = await fetch("/api/radar/preferences", {
+    method: "GET",
+    credentials: "same-origin",
+  });
 
-  if (error) {
-    return {
-      data: null,
-      error: formatError(error, "条件設定の取得に失敗しました"),
-    };
+  if (response.status === 401) {
+    return { data: null, error: formatError("ログインが必要です", "条件設定の取得に失敗しました") };
   }
 
-  if (!data) {
-    return { data: null, error: null };
+  if (!response.ok) {
+    return { data: null, error: await readApiError(response, "条件設定の取得に失敗しました") };
   }
 
-  return { data: rowToPreferences(data as UserPreferencesRow), error: null };
+  const body = (await response.json()) as { data?: UserPreferences | null };
+  return { data: body.data ?? null, error: null };
 }
 
+/** ログインユーザーの条件設定を API 経由で保存（Cookie セッション → RLS 安全） */
 export async function upsertUserPreferences(
-  userId: string,
+  _userId: string,
   preferences: UserPreferences,
 ): Promise<RadarDbResult<UserPreferences>> {
-  const payload = preferencesToRow(userId, preferences);
+  const response = await fetch("/api/radar/preferences", {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(preferences),
+  });
 
-  const { data, error } = await getSupabase()
-    .from("user_preferences")
-    .upsert(payload, { onConflict: "user_id" })
-    .select("*")
-    .single();
-
-  if (error) {
+  if (response.status === 401) {
     return {
       data: null,
-      error: formatError(error, "条件設定の保存に失敗しました"),
+      error: formatError("ログインが必要です", "条件設定の保存に失敗しました"),
     };
   }
 
-  return { data: rowToPreferences(data as UserPreferencesRow), error: null };
+  if (!response.ok) {
+    return { data: null, error: await readApiError(response, "条件設定の保存に失敗しました") };
+  }
+
+  const body = (await response.json()) as { data?: UserPreferences };
+  if (!body.data) {
+    return { data: null, error: formatError("empty response", "条件設定の保存に失敗しました") };
+  }
+
+  return { data: body.data, error: null };
 }

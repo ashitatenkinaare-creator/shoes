@@ -22,6 +22,9 @@ export type RadarSneakerRow = {
   phase: "announced" | "upcoming" | "today";
   price: number;
   store_url: string;
+  news_url: string | null;
+  lottery_url: string | null;
+  lottery_opened_at: string | null;
   description: string;
   colorway: string;
   sku: string;

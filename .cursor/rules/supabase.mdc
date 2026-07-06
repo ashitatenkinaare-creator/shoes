@@ -1,35 +1,34 @@
 ---
-description: SneakerDrop Supabase開発ルール（MCP・クライアント連携）
-globs: src/lib/**/*.ts,src/types/**/*.ts,src/pages/**/*.tsx
+description: Sneaker Radar Supabase 開発ルール（MCP・マイグレーション）
+globs: src/lib/**/*.ts,src/types/**/*.ts,supabase/**/*
 alwaysApply: false
 ---
 
-# Supabase 開発ルール（SneakerDrop）
+# Supabase 開発ルール
 
-## プロジェクト情報
+## プロジェクト
 
 - **Project ref**: `bgewibbguoqqftvqffhg`
-- **Project name**: shose
-- **主要テーブル**: `public.sneakers`
+- **主要テーブル**: `radar_sneakers`, `user_preferences`, `watchlist`, `notification_logs`, `sneakers`
 
 ## MCP の使い方
 
 - スキーマ確認: `list_tables` を先に実行
-- DDL（テーブル作成・変更）: `apply_migration` を使用
+- DDL: `apply_migration` を使用
 - データ確認: `execute_sql`（読み取り用途）
-- クライアント設定: `get_project_url` / `get_publishable_keys`
+- 変更前: `get_advisors` でセキュリティ・性能を確認
 
-## アプリ側の接続
+## アプリ側
 
-- クライアント: `src/lib/supabase.ts`
-- CRUD: `src/lib/sneakers.ts`
-- 環境変数: `.env` の `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`
+- クライアント: `src/lib/supabase/client.ts`
+- サーバー: `src/lib/supabase/server.ts`
+- 環境変数: `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- サーバー専用: `SUPABASE_SERVICE_ROLE_KEY`（Git に含めない）
 
 ## セキュリティ
 
 - `service_role` キーはフロントエンドに置かない
 - 本番前に RLS を有効化し、ポリシーを設計する
-- MCP で `apply_migration` する前に `list_tables` で現状を確認する
 
 ## Agent Skills
 

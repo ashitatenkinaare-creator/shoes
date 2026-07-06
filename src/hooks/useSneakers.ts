@@ -81,9 +81,7 @@ export function useSneakers() {
     }
 
     if (data) {
-      setSneakers((prev) =>
-        prev.map((s) => (s.id === sneaker.id ? toSneaker(data) : s)),
-      );
+      setSneakers((prev) => prev.map((s) => (s.id === sneaker.id ? toSneaker(data) : s)));
     }
   };
 

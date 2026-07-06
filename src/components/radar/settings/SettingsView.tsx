@@ -1,9 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import PreferenceForm from "@/components/radar/settings/PreferenceForm";
+import WebPushPanel from "@/components/radar/settings/WebPushPanel";
 import { useAuthSession } from "@/hooks/useAuthSession";
 
 export default function SettingsView() {
@@ -42,6 +42,10 @@ export default function SettingsView() {
       </header>
 
       <PreferenceForm />
+
+      <div className="mt-8">
+        <WebPushPanel />
+      </div>
     </>
   );
 }

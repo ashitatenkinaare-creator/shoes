@@ -1,5 +1,5 @@
-/** 通知フェーズ（MVP: 発表 / 発売の2段階） */
-export type NotificationPhase = "announcement" | "release";
+/** 通知フェーズ（発表 / 抽選ページ開設 / 発売） */
+export type NotificationPhase = "announcement" | "lottery_open" | "release";
 
 /** スニーカーのライフサイクル表示用 */
 export type SneakerPhase = "announced" | "upcoming" | "today";
@@ -16,6 +16,9 @@ export type SneakerRadarItem = {
   phase: SneakerPhase;
   price: number;
   storeUrl: string;
+  newsUrl: string | null;
+  lotteryUrl: string | null;
+  lotteryOpenedAt: string | null;
   isRare: boolean;
   isCollab: boolean;
   /** 条件マッチ理由（ダッシュボード表示用） */

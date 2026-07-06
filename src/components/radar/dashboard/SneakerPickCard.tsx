@@ -3,12 +3,7 @@
 import Link from "next/link";
 import RadarProductImage from "@/components/radar/RadarProductImage";
 import { Bell, BellOff, ChevronRight } from "lucide-react";
-import {
-  formatDateJa,
-  formatYen,
-  getPhaseLabel,
-  getPhaseStyle,
-} from "@/lib/radar/format";
+import { formatDateJa, formatYen, getPhaseLabel, getPhaseStyle } from "@/lib/radar/format";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import type { SneakerRadarItem } from "@/types/radar";
 

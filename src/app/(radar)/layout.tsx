@@ -6,7 +6,8 @@ export const metadata: Metadata = {
     default: "Sneaker Radar",
     template: "%s | Sneaker Radar",
   },
-  description: "好み条件に合う新作スニーカーを自動ピックアップし、発表・発売を通知するパートナーアプリ",
+  description:
+    "好み条件に合う新作スニーカーを自動ピックアップし、発表・発売を通知するパートナーアプリ",
 };
 
 export default function RadarLayout({

@@ -31,20 +31,6 @@ export default function Hero({ drop }: HeroProps) {
         <p className="mt-4 max-w-lg text-sm leading-relaxed text-slate-300 lg:text-base">
           {drop.description}
         </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            className="btn-press min-h-[48px] rounded-lg bg-drop-orange px-8 py-3 text-sm font-black tracking-wider text-black uppercase transition-colors hover:bg-drop-orange-hover"
-          >
-            Enter Draw
-          </button>
-          <button
-            type="button"
-            className="btn-press min-h-[48px] rounded-lg border border-slate-500 px-8 py-3 text-sm font-bold tracking-wider text-white uppercase transition-colors hover:border-white"
-          >
-            Details
-          </button>
-        </div>
       </div>
     </section>
   );

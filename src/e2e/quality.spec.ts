@@ -11,6 +11,11 @@ test.describe("品質チェック", () => {
     execSync("npx tsc --noEmit", { stdio: "pipe" });
   });
 
+  test("ESLint / Prettier チェックが通る", () => {
+    execSync("npm run lint", { stdio: "pipe" });
+    execSync("npm run format:check", { stdio: "pipe" });
+  });
+
   test("必須環境変数が .env.local に設定されている", () => {
     const env = loadEnvLocalForTest();
     expect(env.NEXT_PUBLIC_SUPABASE_URL).toBeTruthy();

@@ -39,9 +39,7 @@ export default function WatchlistView() {
               <LayoutList className="h-5 w-5 text-radar-accent" aria-hidden="true" />
               <h1 className="text-xl font-black text-white lg:text-2xl">ウォッチリスト</h1>
             </div>
-            <p className="mt-2 text-sm text-slate-400">
-              登録したモデルの発売通知を管理します
-            </p>
+            <p className="mt-2 text-sm text-slate-400">登録したモデルの発売通知を管理します</p>
           </div>
           <span
             className="shrink-0 rounded-full bg-radar-accent/15 px-4 py-1.5 text-sm font-bold text-radar-accent"
@@ -54,8 +52,7 @@ export default function WatchlistView() {
         {nextRelease && (
           <p className="mt-4 flex items-center gap-2 text-xs text-slate-400">
             <CalendarClock className="h-3.5 w-3.5 shrink-0 text-radar-accent" aria-hidden="true" />
-            次の発売:{" "}
-            <span className="font-medium text-slate-200">{nextRelease.modelName}</span>
+            次の発売: <span className="font-medium text-slate-200">{nextRelease.modelName}</span>
             <span className="text-slate-500">（{formatDateJa(nextRelease.releaseDate)}）</span>
           </p>
         )}
@@ -70,10 +67,7 @@ export default function WatchlistView() {
             )}
           </span>
           {items.length > 0 && (
-            <Link
-              href="/dashboard"
-              className="font-semibold text-radar-accent hover:underline"
-            >
+            <Link href="/dashboard" className="font-semibold text-radar-accent hover:underline">
               新作を追加する
             </Link>
           )}

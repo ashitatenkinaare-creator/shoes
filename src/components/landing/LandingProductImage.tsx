@@ -2,10 +2,7 @@
 
 import Image, { type ImageProps } from "next/image";
 import { useState } from "react";
-import {
-  LANDING_PLACEHOLDER_IMAGE,
-  resolveLandingImageUrl,
-} from "@/lib/landing/placeholder-image";
+import { LANDING_PLACEHOLDER_IMAGE, resolveLandingImageUrl } from "@/lib/landing/placeholder-image";
 
 type LandingProductImageProps = Omit<ImageProps, "src" | "alt"> & {
   src: string | null | undefined;

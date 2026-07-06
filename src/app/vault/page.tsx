@@ -5,7 +5,7 @@ import VaultGrid from "@/components/landing/VaultGrid";
 import type { BrandFilter } from "@/types/drop";
 
 export const metadata: Metadata = {
-  title: "The Vault",
+  title: "スニーカーカタログ",
   description: "SneakerDrop カタログ · 全リリース一覧",
 };
 

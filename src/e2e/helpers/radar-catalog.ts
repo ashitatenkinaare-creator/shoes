@@ -1,10 +1,10 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
 function newArrivalsSection(page: Page): Locator {
-  return page.getByRole("region", { name: "条件にマッチした新作" });
+  return page.getByRole("region", { name: "公式掲載・新作ピックアップ" });
 }
 
-/** 「条件に合う新作はまだありません」を除いたスニーカーカード行 */
+/** 空状態メッセージを除いたスニーカーカード行 */
 export function matchedSneakerItems(section: Locator): Locator {
   return section.locator('ul > li:has(a[href^="/sneaker/"])');
 }

@@ -1,19 +1,12 @@
 import type { PostgrestError } from "@supabase/supabase-js";
-import { MOCK_PREFERENCES } from "@/data/radar-mock";
-import { buildNotificationDrafts } from "@/lib/radar/notifications";
-import { fetchUserPreferences } from "@/lib/radar/preferences-db";
 import { getSupabase } from "@/lib/supabase/client";
-import type { RadarDbResult, RadarSneakerRow } from "@/types/radar-db";
+import type { RadarDbResult } from "@/types/radar-db";
 import type { NotificationItem, NotificationLogRow } from "@/types/notification";
 import { rowToNotification } from "@/types/notification";
 
 function formatError(error: PostgrestError, context: string): string {
   return `${context}: ${error.message}`;
 }
-
-type WatchlistJoinRow = {
-  radar_sneakers: RadarSneakerRow;
-};
 
 export async function fetchNotifications(
   userId: string,
@@ -37,54 +30,26 @@ export async function fetchNotifications(
   };
 }
 
-export async function syncNotifications(userId: string): Promise<RadarDbResult<number>> {
-  const { data: prefs, error: prefError } = await fetchUserPreferences(userId);
-  if (prefError) return { data: null, error: prefError };
+export async function syncNotifications(): Promise<RadarDbResult<number>> {
+  try {
+    const response = await fetch("/api/radar/sync-notifications", {
+      method: "POST",
+      credentials: "include",
+    });
 
-  const preferences = prefs ?? MOCK_PREFERENCES;
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+      return {
+        data: null,
+        error: payload?.error ?? "通知の同期に失敗しました",
+      };
+    }
 
-  const { data: watchlistData, error: watchError } = await getSupabase()
-    .from("watchlist")
-    .select("radar_sneakers(*)")
-    .eq("user_id", userId);
-
-  if (watchError) {
-    return {
-      data: null,
-      error: formatError(watchError, "ウォッチリストの取得に失敗しました"),
-    };
+    const payload = (await response.json()) as { synced?: number };
+    return { data: payload.synced ?? 0, error: null };
+  } catch {
+    return { data: null, error: "通知の同期に失敗しました" };
   }
-
-  const sneakers = ((watchlistData ?? []) as unknown as WatchlistJoinRow[])
-    .map((row) => row.radar_sneakers)
-    .filter(Boolean);
-
-  const drafts = buildNotificationDrafts(sneakers, preferences);
-
-  if (drafts.length === 0) {
-    return { data: 0, error: null };
-  }
-
-  const rows = drafts.map((draft) => ({
-    user_id: userId,
-    sneaker_id: draft.sneaker_id,
-    phase: draft.phase,
-    title: draft.title,
-    body: draft.body,
-  }));
-
-  const { error: insertError } = await getSupabase()
-    .from("notification_logs")
-    .upsert(rows, { onConflict: "user_id,sneaker_id,phase", ignoreDuplicates: true });
-
-  if (insertError) {
-    return {
-      data: null,
-      error: formatError(insertError, "通知の同期に失敗しました"),
-    };
-  }
-
-  return { data: drafts.length, error: null };
 }
 
 export async function markNotificationRead(
@@ -107,9 +72,7 @@ export async function markNotificationRead(
   return { data: null, error: null };
 }
 
-export async function markAllNotificationsRead(
-  userId: string,
-): Promise<RadarDbResult<null>> {
+export async function markAllNotificationsRead(userId: string): Promise<RadarDbResult<null>> {
   const { error } = await getSupabase()
     .from("notification_logs")
     .update({ read_at: new Date().toISOString() })
@@ -126,9 +89,7 @@ export async function markAllNotificationsRead(
   return { data: null, error: null };
 }
 
-export async function sendDemoNotification(
-  userId: string,
-): Promise<RadarDbResult<null>> {
+export async function sendDemoNotification(userId: string): Promise<RadarDbResult<null>> {
   const { data, error } = await getSupabase()
     .from("watchlist")
     .select("sneaker_id, radar_sneakers(model_name, brand)")
@@ -149,17 +110,19 @@ export async function sendDemoNotification(
 
   const sneaker = data.radar_sneakers as unknown as { model_name: string; brand: string };
 
-  const { error: insertError } = await getSupabase().from("notification_logs").upsert(
-    {
-      user_id: userId,
-      sneaker_id: data.sneaker_id,
-      phase: "announcement",
-      title: `【デモ】${sneaker.brand} ${sneaker.model_name}`,
-      body: "これは Sneaker Radar のサンプル通知です。本番では Web Push / FCM 等に拡張します。",
-      read_at: null,
-    },
-    { onConflict: "user_id,sneaker_id,phase" },
-  );
+  const { error: insertError } = await getSupabase()
+    .from("notification_logs")
+    .upsert(
+      {
+        user_id: userId,
+        sneaker_id: data.sneaker_id,
+        phase: "announcement",
+        title: `【デモ】${sneaker.brand} ${sneaker.model_name}`,
+        body: "これは Sneaker Radar のサンプル通知です。本番では Web Push / FCM 等に拡張します。",
+        read_at: null,
+      },
+      { onConflict: "user_id,sneaker_id,phase" },
+    );
 
   if (insertError) {
     return {

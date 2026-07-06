@@ -33,12 +33,6 @@
       "beams",
       "brooks brothers"
     ],
-    "regex": [
-      "\\bx\\s+",
-      "\\s+x\\s+",
-      "×",
-      "\\bcollab(orati(on|e))?\\b",
-      "\\boff-?white\\b"
-    ]
+    "regex": ["\\bx\\s+", "\\s+x\\s+", "×", "\\bcollab(orati(on|e))?\\b", "\\boff-?white\\b"]
   }
 }

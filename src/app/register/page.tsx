@@ -3,7 +3,7 @@ import LandingShell from "@/components/landing/LandingShell";
 import RegistrationForm from "@/components/landing/RegistrationForm";
 
 export const metadata: Metadata = {
-  title: "Join the Drop",
+  title: "会員登録",
   description: "SneakerDrop メンバー登録",
 };
 

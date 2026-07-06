@@ -10,11 +10,7 @@ async function seedWatchlistFromDashboard(page: Page, count = 2): Promise<string
   const ids: string[] = [];
 
   for (let i = 0, total = await sneakers.count(); i < total && ids.length < count; i += 1) {
-    const href = await sneakers
-      .nth(i)
-      .locator('a[href^="/sneaker/"]')
-      .first()
-      .getAttribute("href");
+    const href = await sneakers.nth(i).locator('a[href^="/sneaker/"]').first().getAttribute("href");
     if (!href) continue;
     const id = href.replace("/sneaker/", "");
     if (!ids.includes(id)) ids.push(id);
@@ -65,15 +61,20 @@ test.describe("Watchlist CRUD(D)", () => {
     );
     expect(seededIds).toHaveLength(1);
   });
+});
 
+test.describe("Watchlist empty state", () => {
   test("最後の1件を削除すると空状態が表示される", async ({ page }) => {
+    await page.goto("/dashboard");
+    await page.evaluate((key) => localStorage.removeItem(key), WATCHLIST_STORAGE_KEY);
+
     const [firstId] = await seedWatchlistFromDashboard(page, 1);
     await page.goto("/watchlist");
+    await page.reload();
+    await expect(page.getByRole("heading", { name: "ウォッチリスト", level: 1 })).toBeVisible();
     await expect(page.locator("header").getByText("1件", { exact: true })).toBeVisible();
 
-    await page
-      .getByRole("button", { name: /をウォッチリストから外す/ })
-      .click();
+    await page.getByRole("button", { name: /をウォッチリストから外す/ }).click();
 
     await expect(page.locator("header").getByText("0件", { exact: true })).toBeVisible();
     await expect(page.getByText("ウォッチ中のモデルはありません")).toBeVisible();

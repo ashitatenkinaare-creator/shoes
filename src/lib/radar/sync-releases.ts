@@ -1,10 +1,13 @@
 import { buildSyncOptions, syncRadarReleases } from "@/lib/radar/kicksdb-sync";
+import { syncOfficialUrlsForCatalog } from "@/lib/radar/official-url-sync.server";
 import { createAdminSupabase, getKicksDbApiKey } from "@/lib/supabase/admin";
 import type { SyncRadarResult } from "@/lib/radar/kicksdb-sync";
 
 export type { SyncRadarResult };
 
-export async function runRadarReleaseSync(): Promise<SyncRadarResult> {
+export async function runRadarReleaseSync(): Promise<
+  SyncRadarResult & { officialUrlsUpdated?: number }
+> {
   const apiKey = getKicksDbApiKey();
   if (!apiKey) {
     return {
@@ -16,5 +19,15 @@ export async function runRadarReleaseSync(): Promise<SyncRadarResult> {
   }
 
   const supabase = createAdminSupabase();
-  return syncRadarReleases(supabase, buildSyncOptions(apiKey));
+  const result = await syncRadarReleases(supabase, buildSyncOptions(apiKey));
+
+  const urlSync = await syncOfficialUrlsForCatalog(supabase);
+  if (urlSync.error) {
+    result.errors.push(urlSync.error);
+  }
+
+  return {
+    ...result,
+    officialUrlsUpdated: urlSync.data ?? 0,
+  };
 }

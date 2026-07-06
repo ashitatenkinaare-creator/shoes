@@ -8,6 +8,7 @@ export type NotificationLogRow = {
   phase: NotificationPhase;
   title: string;
   body: string;
+  action_url: string | null;
   read_at: string | null;
   created_at: string;
 };
@@ -19,6 +20,7 @@ export type NotificationItem = {
   phase: NotificationPhase;
   title: string;
   body: string;
+  actionUrl: string | null;
   readAt: Date | null;
   createdAt: Date;
 };
@@ -30,6 +32,7 @@ export function rowToNotification(row: NotificationLogRow): NotificationItem {
     phase: row.phase,
     title: row.title,
     body: row.body,
+    actionUrl: row.action_url,
     readAt: row.read_at ? new Date(row.read_at) : null,
     createdAt: new Date(row.created_at),
   };

@@ -2,20 +2,10 @@
 
 import Link from "next/link";
 import RadarProductImage from "@/components/radar/RadarProductImage";
-import {
-  ArrowLeft,
-  Bell,
-  BellOff,
-  ExternalLink,
-  Megaphone,
-  Rocket,
-} from "lucide-react";
-import {
-  formatDateJa,
-  formatYen,
-  getPhaseLabel,
-  getPhaseStyle,
-} from "@/lib/radar/format";
+import { resolveOfficialLink, isGenericBrandHubUrl } from "@/lib/radar/sneaker-links";
+import { hasSnkrsProductLotteryUrl } from "@/lib/radar/catalog-dashboard-filter";
+import { ArrowLeft, Bell, BellOff, ExternalLink, Megaphone, Ticket } from "lucide-react";
+import { formatDateJa, formatYen, getPhaseLabel, getPhaseStyle } from "@/lib/radar/format";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import type { SneakerRadarDetail } from "@/types/radar";
 
@@ -26,6 +16,19 @@ interface SneakerDetailViewProps {
 export default function SneakerDetailView({ sneaker }: SneakerDetailViewProps) {
   const { isWatched, toggle, ready } = useWatchlist();
   const watched = ready && isWatched(sneaker.id);
+  const officialLink = resolveOfficialLink(
+    {
+      newsUrl: sneaker.newsUrl,
+      lotteryUrl: sneaker.lotteryUrl,
+      brand: sneaker.brand,
+      modelName: sneaker.modelName,
+    },
+    { allowBrandFallback: false },
+  );
+  const hasProductLotteryPage =
+    Boolean(sneaker.lotteryUrl) &&
+    !isGenericBrandHubUrl(sneaker.lotteryUrl) &&
+    hasSnkrsProductLotteryUrl(sneaker.lotteryUrl);
 
   return (
     <article>
@@ -98,18 +101,22 @@ export default function SneakerDetailView({ sneaker }: SneakerDetailViewProps) {
           </ul>
 
           <section className="mt-6 rounded-xl border border-radar-border bg-radar-muted/50 p-4">
-            <h2 className="text-xs font-bold tracking-wide text-slate-400 uppercase">
-              2段階通知
-            </h2>
+            <h2 className="text-xs font-bold tracking-wide text-slate-400 uppercase">2段階通知</h2>
             <ul className="mt-3 space-y-2 text-sm text-slate-300">
               <li className="flex items-center gap-2">
                 <Megaphone className="h-4 w-4 shrink-0 text-radar-accent" aria-hidden="true" />
-                発表時 — モデル情報解禁のタイミング
+                第1弾 — 公式発表（ニュースリリース解禁）
               </li>
               <li className="flex items-center gap-2">
-                <Rocket className="h-4 w-4 shrink-0 text-radar-accent" aria-hidden="true" />
-                発売時 — 抽選・販売開始の当日
+                <Ticket className="h-4 w-4 shrink-0 text-radar-accent" aria-hidden="true" />
+                第2弾 — 販売・抽選ページ開設（エントリー URL 公開）
               </li>
+              {hasProductLotteryPage && (
+                <li className="flex items-center gap-2 text-radar-accent">
+                  <Ticket className="h-4 w-4 shrink-0" aria-hidden="true" />
+                  抽選ページ公開済み — 下のボタンからエントリーできます
+                </li>
+              )}
             </ul>
           </section>
 
@@ -133,15 +140,21 @@ export default function SneakerDetailView({ sneaker }: SneakerDetailViewProps) {
               {watched ? "ウォッチ中" : "ウォッチリストに追加"}
             </button>
 
-            <a
-              href={sneaker.storeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-press inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-radar-accent px-4 py-3 text-sm font-bold text-radar-bg transition-colors hover:bg-radar-accent-hover"
-            >
-              ストアで見る
-              <ExternalLink className="h-4 w-4" aria-hidden="true" />
-            </a>
+            {officialLink ? (
+              <a
+                href={officialLink.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-press inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl bg-radar-accent px-4 py-3 text-sm font-bold text-radar-bg transition-colors hover:bg-radar-accent-hover"
+              >
+                {officialLink.label}
+                <ExternalLink className="h-4 w-4" aria-hidden="true" />
+              </a>
+            ) : (
+              <p className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl border border-dashed border-radar-border px-4 py-3 text-center text-xs text-slate-500">
+                公式ページ URL は未公開です。ウォッチリスト登録で通知を受け取れます。
+              </p>
+            )}
           </div>
         </div>
       </div>

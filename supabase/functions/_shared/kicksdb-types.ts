@@ -32,7 +32,7 @@ export type KicksDbListResponse = {
 
 /** radar_sneakers upsert 用 */
 export type RadarSneakerUpsertRow = {
-  source: "kicksdb";
+  source: "kicksdb" | "snkrs";
   external_id: string;
   category_slug: string;
   brand: string;
@@ -43,6 +43,9 @@ export type RadarSneakerUpsertRow = {
   phase: "announced" | "upcoming" | "today";
   price: number;
   store_url: string;
+  news_url: string | null;
+  lottery_url: string | null;
+  lottery_opened_at?: string | null;
   description: string;
   colorway: string;
   sku: string;
@@ -54,7 +57,12 @@ export type SyncRadarOptions = {
   kicksdbApiKey: string;
   daysAhead?: number;
   daysBehind?: number;
+  /** release_date フィルター用の全体上限（API が 0 件のときはブランド別取得にフォールバック） */
   limit?: number;
+  /** ブランドごとの query 取得上限 */
+  perBrandLimit?: number;
+  /** KicksDB query= に渡すブランド名（未指定時は KICKSDB_SYNC_BRANDS） */
+  brandQueries?: readonly string[];
   usdJpy?: number;
   announceOffsetDays?: number;
 };

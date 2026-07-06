@@ -10,7 +10,7 @@ interface SneakerDetailPageProps {
 export async function generateMetadata({ params }: SneakerDetailPageProps): Promise<Metadata> {
   const { id } = await params;
   const { data: sneaker } = await fetchSneakerDetailById(id);
-  if (!sneaker) return { title: "Not Found" };
+  if (!sneaker) return { title: "見つかりません" };
   return {
     title: sneaker.modelName,
     description: `${sneaker.brand} · 発売 ${sneaker.releaseDate}`,

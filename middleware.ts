@@ -12,5 +12,6 @@ export const config = {
     "/watchlist/:path*",
     "/sneaker/:path*",
     "/auth/:path*",
+    "/api/radar/:path*",
   ],
 };

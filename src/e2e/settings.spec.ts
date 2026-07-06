@@ -12,8 +12,12 @@ test.describe("Settings Page (正常系動作テスト)", () => {
     await expect(page.locator("form")).toBeVisible();
     await expect(page.getByRole("group", { name: "ブランド / メーカー" })).toBeVisible();
     await expect(page.getByRole("group", { name: /サイズ/i })).toBeVisible();
-    await expect(page.getByRole("checkbox", { name: /新作発表通知/i })).toBeVisible();
-    await expect(page.getByRole("checkbox", { name: /発売当日通知/i })).toBeVisible();
+    await expect(
+      page.getByRole("checkbox", { name: /公式の新作発表・解禁ニュース（第1弾）/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("checkbox", { name: /公式の販売・抽選ページ開設の速報（第2弾）/i }),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "条件を保存する" })).toBeVisible();
   });
 

@@ -1,4 +1,22 @@
-/** KicksDB マッパーと同じフォールバック（404 しない Unsplash） */
+import {
+  isRadarPlaceholderImage,
+  isSnkrsCalendarFallbackDescription,
+  isSnkrsOfficialProductDescription,
+  isSnkrsProductLotteryUrl,
+  mergeSnkrsProductPatch,
+  parseSnkrsSlugFromLotteryUrl,
+} from "../../../supabase/functions/_shared/catalog-quality";
+
+export {
+  isRadarPlaceholderImage,
+  isSnkrsCalendarFallbackDescription,
+  isSnkrsOfficialProductDescription,
+  isSnkrsProductLotteryUrl,
+  mergeSnkrsProductPatch,
+  parseSnkrsSlugFromLotteryUrl,
+};
+
+/** @deprecated RADAR_PLACEHOLDER_IMAGE は catalog-quality と同期 */
 export const RADAR_PLACEHOLDER_IMAGE =
   "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop";
 

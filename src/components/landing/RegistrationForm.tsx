@@ -39,16 +39,19 @@ export default function RegistrationForm() {
 
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 sm:p-8">
           <h1 className="text-center text-2xl font-black tracking-tight text-white uppercase">
-            Join the Drop
+            会員登録
           </h1>
           <p className="mt-2 text-center text-xs tracking-wide text-slate-400 uppercase">
-            Exclusive access to exclusive inventory
+            限定ドロップへの先行アクセス
           </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
             <div>
-              <label htmlFor="email" className="mb-1.5 block text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-                Email Address
+              <label
+                htmlFor="email"
+                className="mb-1.5 block text-[10px] font-bold tracking-widest text-slate-400 uppercase"
+              >
+                メールアドレス
               </label>
               <input
                 id="email"
@@ -60,8 +63,11 @@ export default function RegistrationForm() {
               />
             </div>
             <div>
-              <label htmlFor="username" className="mb-1.5 block text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-                Username
+              <label
+                htmlFor="username"
+                className="mb-1.5 block text-[10px] font-bold tracking-widest text-slate-400 uppercase"
+              >
+                ユーザー名
               </label>
               <input
                 id="username"
@@ -73,8 +79,11 @@ export default function RegistrationForm() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="mb-1.5 block text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-                Password
+              <label
+                htmlFor="password"
+                className="mb-1.5 block text-[10px] font-bold tracking-widest text-slate-400 uppercase"
+              >
+                パスワード
               </label>
               <input
                 id="password"
@@ -101,13 +110,13 @@ export default function RegistrationForm() {
               type="submit"
               className="btn-press min-h-[52px] w-full rounded-lg bg-drop-orange py-4 text-sm font-black tracking-wider text-black uppercase transition-colors hover:bg-drop-orange-hover"
             >
-              Create Account
+              アカウントを作成
             </button>
           </form>
 
           <p className="mt-6 text-center text-[10px] font-bold tracking-wide text-drop-orange uppercase">
-            <Link href="/" className="hover:underline">
-              Already have an account? Log in to your profile
+            <Link href="/auth" className="hover:underline">
+              すでにアカウントをお持ちの方はログイン
             </Link>
           </p>
         </div>
@@ -115,7 +124,7 @@ export default function RegistrationForm() {
 
       <aside className="mt-8 w-full max-w-md rounded-xl border border-slate-800 bg-slate-900 p-4 lg:absolute lg:right-8 lg:bottom-8 lg:mt-0 lg:max-w-xs">
         <p className="text-[10px] font-bold tracking-widest text-drop-orange uppercase">
-          Live Drop Status
+          ライブドロップ状況
         </p>
         <div className="mt-3 flex items-center gap-3">
           <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">

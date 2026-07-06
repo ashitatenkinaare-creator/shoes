@@ -8,6 +8,15 @@ import {
   RARE_PATTERNS,
   RARE_QUOTED_COLORWAY_ENABLED,
 } from "./rare-collab-keywords";
+import {
+  normalizeCatalogBrand,
+  resolveBrandOfficialNewsUrl,
+  resolveBrandOfficialLotteryUrl,
+} from "./official-links";
+import {
+  isUpcomingReleaseDate,
+  resolveVerifiedReleaseDate,
+} from "./release-date";
 
 const DEFAULT_USD_JPY = 150;
 const DEFAULT_ANNOUNCE_OFFSET_DAYS = 14;
@@ -16,65 +25,6 @@ const PLACEHOLDER_IMAGE =
 
 function formatIsoDate(date: Date): string {
   return date.toISOString().slice(0, 10);
-}
-
-function parseReleaseDate(raw: string | undefined): string | null {
-  if (!raw) return null;
-
-  const trimmed = raw.trim();
-  if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
-    return trimmed.slice(0, 10);
-  }
-
-  if (/^\d{8}$/.test(trimmed)) {
-    return `${trimmed.slice(0, 4)}-${trimmed.slice(4, 6)}-${trimmed.slice(6, 8)}`;
-  }
-
-  const parsed = new Date(trimmed);
-  if (Number.isNaN(parsed.getTime())) return null;
-  return formatIsoDate(parsed);
-}
-
-/** 説明文から発売日を抽出（KicksDB 一覧 API は release_date を返さないことが多い） */
-function parseReleaseDateFromDescription(description: string | undefined): string | null {
-  if (!description) return null;
-
-  const droppedMatch = description.match(
-    /(?:dropped|released)\s+on\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})/i,
-  );
-  if (droppedMatch?.[1]) {
-    const parsed = new Date(droppedMatch[1]);
-    if (!Number.isNaN(parsed.getTime())) return formatIsoDate(parsed);
-  }
-
-  const retailYearMatch = description.match(/retailed for \$\d+[^.]*\.[^.]*(\d{4})/i);
-  if (retailYearMatch?.[1]) {
-    return `${retailYearMatch[1]}-06-01`;
-  }
-
-  return null;
-}
-
-function parseReleaseDateFromTitle(title: string | undefined): string | null {
-  if (!title) return null;
-  const yearMatch = title.match(/\((20\d{2})\)/);
-  if (!yearMatch?.[1]) return null;
-
-  const year = Number(yearMatch[1]);
-  const today = new Date();
-  if (year >= today.getFullYear()) {
-    return `${year}-07-01`;
-  }
-  return null;
-}
-
-function resolveReleaseDate(product: KicksDbStockxProduct): string | null {
-  return (
-    parseReleaseDate(product.release_date) ??
-    parseReleaseDateFromDescription(product.description) ??
-    parseReleaseDateFromTitle(product.title ?? product.name) ??
-    (product.created_at ? parseReleaseDate(product.created_at) : null)
-  );
 }
 
 export function computePhase(
@@ -135,13 +85,6 @@ function resolveImageUrl(product: KicksDbStockxProduct): string {
   return product.image ?? product.thumb_url ?? PLACEHOLDER_IMAGE;
 }
 
-function resolveStoreUrl(product: KicksDbStockxProduct): string {
-  if (product.url) return product.url;
-  if (product.link) return product.link;
-  if (product.slug) return `https://stockx.com/${product.slug}`;
-  return "https://stockx.com";
-}
-
 function resolveModelName(product: KicksDbStockxProduct): string {
   return (product.title ?? product.name ?? product.slug ?? "Unknown Sneaker").trim();
 }
@@ -153,8 +96,7 @@ export function detectRareCollabFlags(
 ): { is_rare: boolean; is_collab: boolean } {
   const haystack = `${brand} ${modelName}`.trim();
   const hasQuotedColorway =
-    RARE_QUOTED_COLORWAY_ENABLED &&
-    (/'[^']+'/.test(modelName) || /"[^"]+"/.test(modelName));
+    RARE_QUOTED_COLORWAY_ENABLED && (/'[^']+'/.test(modelName) || /"[^"]+"/.test(modelName));
   const is_rare = RARE_PATTERNS.some((pattern) => pattern.test(haystack)) || hasQuotedColorway;
   const is_collab = COLLAB_PATTERNS.some((pattern) => pattern.test(haystack));
   return { is_rare, is_collab };
@@ -167,14 +109,17 @@ export function mapKicksDbProductToRow(
   const slug = product.slug?.trim();
   if (!slug) return null;
 
-  const releaseDate = resolveReleaseDate(product);
-  if (!releaseDate) return null;
+  const verified = resolveVerifiedReleaseDate(product);
+  if (!verified || !isUpcomingReleaseDate(verified.date)) return null;
 
-  const brand = (product.brand ?? "Unknown").trim();
+  const releaseDate = verified.date;
+  const brand = normalizeCatalogBrand(product.brand ?? "Unknown");
   const modelName = resolveModelName(product);
   const usdJpy = options.usdJpy ?? DEFAULT_USD_JPY;
   const announceOffset = options.announceOffsetDays ?? DEFAULT_ANNOUNCE_OFFSET_DAYS;
   const { is_rare, is_collab } = detectRareCollabFlags(modelName, brand);
+  const newsUrl = resolveBrandOfficialNewsUrl(brand, modelName);
+  const lotteryUrl = resolveBrandOfficialLotteryUrl(brand, modelName);
 
   return {
     source: "kicksdb",
@@ -187,7 +132,9 @@ export function mapKicksDbProductToRow(
     release_date: releaseDate,
     phase: computePhase(releaseDate),
     price: resolvePriceJpy(product, usdJpy),
-    store_url: resolveStoreUrl(product),
+    store_url: newsUrl ?? "https://www.nike.com/jp/launch",
+    news_url: null,
+    lottery_url: lotteryUrl,
     description:
       product.description?.trim() ??
       `${brand} ${modelName}。KicksDB / StockX カタログから同期された新作情報です。`,

@@ -30,12 +30,9 @@ if (!apiKey) {
 const probe = process.argv.includes("--probe");
 
 async function fetchProducts(queryString) {
-  const response = await fetch(
-    `https://api.kicks.dev/v3/stockx/products?${queryString}`,
-    {
-      headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
-    },
-  );
+  const response = await fetch(`https://api.kicks.dev/v3/stockx/products?${queryString}`, {
+    headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
+  });
   const body = await response.text();
   if (!response.ok) {
     return { ok: false, status: response.status, body: body.slice(0, 300) };
@@ -53,7 +50,12 @@ if (probe) {
   const cases = [
     ["limit only", "limit=5"],
     ["query jordan", "limit=5&query=Jordan"],
-    ["wide release dates", `limit=5&filters=${encodeURIComponent('release_date >= "2025-01-01" AND release_date <= "2026-12-31"')}`],
+    ["query adidas", "limit=5&query=Adidas"],
+    ["query new balance", "limit=5&query=New Balance"],
+    [
+      "wide release dates",
+      `limit=5&filters=${encodeURIComponent('release_date >= "2025-01-01" AND release_date <= "2026-12-31"')}`,
+    ],
     ["sneakers type", `limit=5&filters=${encodeURIComponent('product_type = "sneakers"')}`],
   ];
 

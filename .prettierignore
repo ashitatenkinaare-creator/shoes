@@ -1,0 +1,8 @@
+.next
+out
+build
+dist
+node_modules
+test-results
+package-lock.json
+scripts/register-radar-category.mjs

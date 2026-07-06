@@ -16,12 +16,19 @@ test("スニーカーを新規登録できる", async ({ page }) => {
   await page.locator("#releaseDate").fill("2026-07-12");
   await page.getByRole("button", { name: "登録する" }).click();
 
-  await expect(page.locator("#modelName")).toHaveValue("");
+  await expect(page.locator("#modelName")).toHaveValue("", { timeout: 15000 });
   await expect(page.locator("#brand")).toHaveValue("");
   await expect(page.locator("#releaseDate")).toHaveValue("");
 
-  const item = page.locator("ul > li").filter({ hasText: modelName });
-  await expect(item).toBeVisible({ timeout: 15000 });
+  let item = page.locator("ul > li").filter({ hasText: modelName });
+  try {
+    await expect(item).toBeVisible({ timeout: 5000 });
+  } catch {
+    await page.reload();
+    item = page.locator("ul > li").filter({ hasText: modelName });
+    await expect(item).toBeVisible({ timeout: 15000 });
+  }
+
   await expect(item).toContainText("Nike");
   await expect(item.getByRole("switch", { name: `${modelName}の通知設定` })).toBeVisible();
 

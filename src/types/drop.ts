@@ -33,6 +33,7 @@ export type ProductSpec = {
 export type ProductDetail = {
   id: string;
   slug: string;
+  brand: string;
   series: string;
   title: string;
   description: string;
@@ -41,6 +42,9 @@ export type ProductDetail = {
   gallery: string[];
   specs: ProductSpec[];
   dropEndsAt: Date;
+  newsUrl?: string | null;
+  lotteryUrl?: string | null;
+  storeUrl?: string;
 };
 
 export type NavPage = "launches" | "upcoming" | "archive" | "vault";

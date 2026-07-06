@@ -24,7 +24,7 @@ function loadEnvLocal() {
   }
 }
 
-function parseArgs(argv: string[]) {
+function parseArgs(argv) {
   const args: Record<string, string> = {};
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i]?.startsWith("--") && argv[i + 1]) {

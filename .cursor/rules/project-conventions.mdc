@@ -1,0 +1,48 @@
+---
+description: Sneaker Radar プロジェクト共通ルール（AI駆動開発）
+alwaysApply: true
+---
+
+# Sneaker Radar プロジェクトルール
+
+## スタック
+
+- Next.js 16 (App Router) + React 19 + TypeScript
+- Tailwind CSS v4 / Supabase / Vitest / Playwright
+
+## コーディング方針
+
+- `src/` で `any` を使わない
+- 機密情報は `.env.local` のみ（Git に含めない）
+- 変更は最小スコープで。無関係なリファクタを避ける
+- 整形: `npm run format` / Lint: `npm run lint`
+
+## 主要パス
+
+| 用途 | パス |
+| --- | --- |
+| Radar ページ | `src/app/(radar)/` |
+| 通知ロジック | `src/lib/radar/notifications.ts` |
+| LLM 文案 | `src/lib/radar/llm-notification-copy.ts` |
+| E2E | `src/e2e/*.spec.ts` |
+| 機能仕様 | `docs/user-features.md` |
+
+## テスト
+
+- ユニット: `npm test -- --run`
+- E2E: `npm run test:e2e`（ベース URL `http://localhost:3000`）
+- E2E 失敗時: スクリーンショット・コンソールログ・ネットワークを報告
+
+## カスタムコマンド
+
+Agent 入力で `/` から以下を呼び出せる:
+
+- `/run-e2e-test` — Playwright E2E 実行
+- `/run-quality-check` — tsc / ESLint / Prettier / Vitest
+- `/seed-demo` — デモデータ投入
+- `/sync-radar-catalog` — KicksDB 同期
+
+## MCP
+
+- **GitHub**: `.cursor/mcp.json`（`GITHUB_TOKEN` 環境変数が必要）
+- **Supabase**: Cursor ユーザー設定の `user-supabase` MCP

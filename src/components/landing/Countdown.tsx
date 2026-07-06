@@ -47,16 +47,16 @@ export default function Countdown({ targetDate }: CountdownProps) {
   return (
     <div>
       <p className="mb-4 text-xs font-bold tracking-widest text-slate-400 uppercase">
-        Drop Starts In
+        ドロップ開始まで
       </p>
       <div className="flex gap-3 sm:gap-4">
-        <Pad value={time.days} label="Days" />
+        <Pad value={time.days} label="日" />
         <span className="self-start pt-4 text-drop-orange">:</span>
-        <Pad value={time.hours} label="Hrs" />
+        <Pad value={time.hours} label="時間" />
         <span className="self-start pt-4 text-drop-orange">:</span>
-        <Pad value={time.minutes} label="Min" />
+        <Pad value={time.minutes} label="分" />
         <span className="self-start pt-4 text-drop-orange">:</span>
-        <Pad value={time.seconds} label="Sec" />
+        <Pad value={time.seconds} label="秒" />
       </div>
     </div>
   );

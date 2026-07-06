@@ -73,3 +73,7 @@ export async function deleteUserByEmail(email: string): Promise<void> {
   const admin = getAdminClient();
   await admin.auth.admin.deleteUser(userId);
 }
+
+export async function getUserIdByEmail(email: string): Promise<string | null> {
+  return findUserIdByEmail(email);
+}

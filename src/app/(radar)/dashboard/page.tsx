@@ -20,7 +20,7 @@ export default async function DashboardPage() {
     ? { filterRare: preferences.filterRare, filterCollab: preferences.filterCollab }
     : undefined;
 
-  const { data } = await fetchUpcomingSneakers(20, catalogFilters);
+  const { data } = await fetchUpcomingSneakers(20, catalogFilters, { mode: "dashboard" });
   const items = data ?? [];
 
   return <DashboardView items={items} initialPreferences={preferences} />;

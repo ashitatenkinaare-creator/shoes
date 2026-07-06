@@ -2,9 +2,7 @@
 export const RADAR_PROTECTED_PATHS = [] as const;
 
 export function isRadarProtectedPath(pathname: string): boolean {
-  return RADAR_PROTECTED_PATHS.some(
-    (path) => pathname === path || pathname.startsWith(`${path}/`),
-  );
+  return RADAR_PROTECTED_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 }
 
 export function sanitizeRedirectPath(path: string | null | undefined): string {

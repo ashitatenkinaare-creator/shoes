@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { MOCK_PREFERENCES } from "@/data/radar-mock";
 import { filterSneakersByPreferences } from "@/lib/radar/filter-sneakers";
-import {
-  matchesAnyCollabBrand,
-  matchesAnySilhouette,
-  matchesSilhouette,
-} from "@/lib/radar/silhouette-keywords";
+import { matchesAnyCollabBrand, matchesSilhouette } from "@/lib/radar/silhouette-keywords";
 import type { SneakerRadarItem } from "@/types/radar";
 
 const baseItem = {
@@ -15,6 +11,9 @@ const baseItem = {
   phase: "upcoming" as const,
   price: 24200,
   storeUrl: "https://stockx.com/a",
+  newsUrl: null,
+  lotteryUrl: null,
+  lotteryOpenedAt: null,
   isRare: false,
   isCollab: false,
   matchedReasons: [] as string[],
@@ -132,5 +131,26 @@ describe("filterSneakersByPreferences", () => {
 
     expect(filtered).toHaveLength(1);
     expect(filtered[0]?.modelName).toContain("BEAMS");
+  });
+
+  it("matches Adidas regardless of DB brand casing", () => {
+    const items: SneakerRadarItem[] = [
+      {
+        ...baseItem,
+        id: "adidas-1",
+        categorySlug: "sneakers",
+        categoryLabel: "スニーカー",
+        brand: "adidas",
+        modelName: "Samba OG",
+        matchedReasons: ["ブランド: adidas", "公式情報あり"],
+      },
+    ];
+
+    const filtered = filterSneakersByPreferences(items, {
+      ...MOCK_PREFERENCES,
+      brands: ["Adidas"],
+    });
+
+    expect(filtered).toHaveLength(1);
   });
 });
